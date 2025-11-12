@@ -28,7 +28,8 @@ public class PlatformerControls : MonoBehaviour
 
     private bool isGrounded, isOnWall, wallJumped = false;
 
-    private float jumpBufferCounter, jumpBufferTime = 0.10f;
+    private float jumpBufferCounter, coyoteTimeCounter;
+    public float jumpBufferTime = 0.10f, coyoteTimeDuration = 0.10f;
 
     //private AudioSource playerAudio;
 
@@ -70,18 +71,24 @@ public class PlatformerControls : MonoBehaviour
         verticalInput = Input.GetButtonDown("Jump");
         verticalInputReleased = Input.GetButtonUp("Jump");
 
-        if (verticalInput)
+        if (verticalInput && !wallJumped)
             jumpBufferCounter = jumpBufferTime;
         else
             jumpBufferCounter -= Time.deltaTime;
 
 
-        if (isGrounded && jumpBufferCounter > 0.0f)
+        if (isGrounded)
+            coyoteTimeCounter = coyoteTimeDuration;
+        else
+            coyoteTimeCounter -= Time.deltaTime;
+
+        if ((isGrounded || coyoteTimeCounter > 0.0f) && jumpBufferCounter > 0.0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             jumpBufferCounter = 0.0f;
+            coyoteTimeCounter = 0.0f;
         }
-        else if (isOnWall && jumpBufferCounter > 0.0f)
+        else if (isOnWall && jumpBufferCounter > 0.0f && !wallJumped)
         {
             StartCoroutine(justWallJumped());
             rb.velocity = new Vector2(wallJumpHoriForce * directionalNegation, wallJumpVertForce);
@@ -96,6 +103,9 @@ public class PlatformerControls : MonoBehaviour
 
     void FixedUpdate()
     {
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        isOnWall = Physics2D.OverlapCircle(wallJumpCheck.position, wallCheckRadius, groundLayer);
+        
         if (!wallJumped)
             rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
 
@@ -103,10 +113,7 @@ public class PlatformerControls : MonoBehaviour
 
         //animator.SetFloat("yVelocity", rb.velocity.y);
 
-        //animator.SetBool("onGround", isGrounded);
-
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-        isOnWall = Physics2D.OverlapCircle(wallJumpCheck.position, wallCheckRadius, groundLayer);
+        //animator.SetBool("onGround", isGrounded);       
 
         if (horizontalInput > 0)
         {

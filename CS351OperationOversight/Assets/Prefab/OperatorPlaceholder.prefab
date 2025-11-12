@@ -139,7 +139,7 @@ MonoBehaviour:
   moveSpeed: 7
   jumpForce: 10
   wallJumpHoriForce: 5
-  wallJumpVertForce: 8.5
+  wallJumpVertForce: 7.5
   wjHoriPause: 0.125
   groundLayer:
     serializedVersion: 2
@@ -148,6 +148,8 @@ MonoBehaviour:
   wallJumpCheck: {fileID: 3077929249725741587}
   groundCheckRadius: 0
   wallCheckRadius: 0
+  jumpBufferTime: 0.125
+  coyoteTimeDuration: 0.125
 --- !u!1 &3077929249725741586
 GameObject:
   m_ObjectHideFlags: 0
