@@ -26,7 +26,7 @@ public class PlatformerControls : MonoBehaviour
     private float horizontalInput, vertTransModifier = 3f;
     private bool verticalInput, verticalInputReleased;
 
-    private bool isGrounded, isOnWall, wallJumped = false;
+    private bool isGrounded, isOnWall, jumpRequest, wallJumpRequest, wallJumped = false;
 
     private float jumpBufferCounter, coyoteTimeCounter;
     public float jumpBufferTime = 0.10f, coyoteTimeDuration = 0.10f;
@@ -50,7 +50,7 @@ public class PlatformerControls : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        groundCheckRadius = 0.15f;
+        groundCheckRadius = 0.02f;
         wallCheckRadius = 0.15f;
         rb = GetComponent<Rigidbody2D>();
 
@@ -84,15 +84,11 @@ public class PlatformerControls : MonoBehaviour
 
         if ((isGrounded || coyoteTimeCounter > 0.0f) && jumpBufferCounter > 0.0f)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            jumpBufferCounter = 0.0f;
-            coyoteTimeCounter = 0.0f;
+            jumpRequest = true;
         }
-        else if (isOnWall && jumpBufferCounter > 0.0f && !wallJumped)
+        else if (isOnWall && jumpBufferCounter > 0.0f)
         {
-            StartCoroutine(justWallJumped());
-            rb.velocity = new Vector2(wallJumpHoriForce * directionalNegation, wallJumpVertForce);
-            jumpBufferCounter = 0.0f;
+            wallJumpRequest = true;
         }
 
         if (verticalInputReleased && rb.velocity.y > 0) { 
@@ -108,6 +104,21 @@ public class PlatformerControls : MonoBehaviour
         
         if (!wallJumped)
             rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
+
+        if (jumpRequest)
+        {
+            jumpRequest = false;
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            jumpBufferCounter = 0.0f;
+            coyoteTimeCounter = 0.0f;
+        }
+        else if (wallJumpRequest)
+        {
+            wallJumpRequest = false;
+            StartCoroutine(justWallJumped());
+            rb.velocity = new Vector2(wallJumpHoriForce * directionalNegation, wallJumpVertForce);
+            jumpBufferCounter = 0.0f;
+        }
 
         //animator.SetFloat("xVelocityAbs", Mathf.Abs(rb.velocity.x));
 
