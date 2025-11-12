@@ -23,7 +23,8 @@ public class PlatformerControls : MonoBehaviour
     private Rigidbody2D rb;
 
     // horisontal var
-    private float horizontalInput, vertTransModifier = 3f;
+    private float horizontalInput;
+    public float vertTransModifier;
     private bool verticalInput, verticalInputReleased;
 
     private bool isGrounded, isOnWall, jumpRequest, wallJumpRequest, wallJumped = false;
