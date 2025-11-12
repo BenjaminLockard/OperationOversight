@@ -23,10 +23,12 @@ public class PlatformerControls : MonoBehaviour
     private Rigidbody2D rb;
 
     // horisontal var
-    private float horizontalInput, vertTransModifier = 2.5f;
+    private float horizontalInput, vertTransModifier = 3f;
     private bool verticalInput, verticalInputReleased;
 
     private bool isGrounded, isOnWall, wallJumped = false;
+
+    private float jumpBufferCounter, jumpBufferTime = 0.10f;
 
     //private AudioSource playerAudio;
 
@@ -48,7 +50,7 @@ public class PlatformerControls : MonoBehaviour
     void Start()
     {
         groundCheckRadius = 0.15f;
-        wallCheckRadius = 0.5f;
+        wallCheckRadius = 0.15f;
         rb = GetComponent<Rigidbody2D>();
 
         if (groundCheck == null || wallJumpCheck == null)
@@ -69,19 +71,26 @@ public class PlatformerControls : MonoBehaviour
         verticalInputReleased = Input.GetButtonUp("Jump");
 
         if (verticalInput)
+            jumpBufferCounter = jumpBufferTime;
+        else
+            jumpBufferCounter -= Time.deltaTime;
+
+
+        if (isGrounded && jumpBufferCounter > 0.0f)
         {
-            if (isGrounded)
-                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            else if (isOnWall)
-            {
-                StartCoroutine(justWallJumped());
-                rb.velocity = new Vector2(wallJumpHoriForce * directionalNegation, wallJumpVertForce);
-            }
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            jumpBufferCounter = 0.0f;
+        }
+        else if (isOnWall && jumpBufferCounter > 0.0f)
+        {
+            StartCoroutine(justWallJumped());
+            rb.velocity = new Vector2(wallJumpHoriForce * directionalNegation, wallJumpVertForce);
+            jumpBufferCounter = 0.0f;
         }
 
         if (verticalInputReleased && rb.velocity.y > 0) { 
                 rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y / vertTransModifier);
-        }
+        } 
         //    //playerAudio.PlayOneShot(jumpSound, 1.0f)
     }
 
