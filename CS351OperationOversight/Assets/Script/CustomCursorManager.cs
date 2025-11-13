@@ -1,3 +1,9 @@
+/* Author: Cole Dixon
+ * Date: 11/12/2025
+ * Assignment: P06
+ * Description: Mouse cursor controller
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,26 +14,61 @@ using TMPro;
 
 public class CustomCursorManager : MonoBehaviour
 {
-    //using this script to manage custom cursor behavior
-    public Texture2D customCursorTexture;
+   
+    public Texture2D defaultCursorTexture;
+    public Texture2D hoverCursorTexture;
+
     public Vector2 hotSpot = Vector2.zero;
     public CursorMode cursorMode = CursorMode.Auto;
 
-    // Start is called before the first frame update
-    void Start()
+    private bool isOverUI = false;
+    private static CustomCursorManager instance;
+
+
+
+    void Awake()
     {
-        Cursor.SetCursor(customCursorTexture, hotSpot, cursorMode);
-
-
+        instance = this;
     }
 
-    // Update is called once per frame
+    void Start()
+    {
+        SetDefaultCursor();
+    }
+
     void Update()
     {
-        //when mouse hover over UI element, change cursor
+        bool pointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
 
+        if (pointerOverUI && !isOverUI)
+        {
+            SetHoverCursor();
+            isOverUI = true;
+        }
+        else if (!pointerOverUI && isOverUI)
+        {
+            SetDefaultCursor();
+            isOverUI = false;
+        }
+    }
 
+    public void SetDefaultCursor()
+    {
+        Cursor.SetCursor(defaultCursorTexture, hotSpot, cursorMode);
+    }
 
+    public void SetHoverCursor()
+    {
+        Cursor.SetCursor(hoverCursorTexture, hotSpot, cursorMode);
+    }
 
+    public static void HoverObject(bool isHovering)
+    {
+        if (instance == null) return;
+
+        if (isHovering)
+            instance.SetHoverCursor();
+        else
+            instance.SetDefaultCursor();
     }
 }
