@@ -9,27 +9,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
+[RequireComponent(typeof(Collider2D))]
 public class RailCar : MonoBehaviour
 {
-    
+    [Header("Movement Settings")]
     public Transform pointA;
     public Transform pointB;
-
     public float moveSpeed = 2f;
-    private bool movingToB = true;
-    private bool isMoving = false;
 
-
+    [Header("Player Attachment")]
     public Transform player;
     public float attachDistance = 1.5f;
     private bool isPlayerAttached = false;
 
-
+    [Header("Visuals")]
     public Color defaultColor = Color.white;
     public Color selectedColor = Color.yellow;
 
     private bool isSelected = false;
+    private bool isMoving = false;
+    private bool movingToB = true;
     private SpriteRenderer spriteRenderer;
 
     void Start()
@@ -41,31 +40,41 @@ public class RailCar : MonoBehaviour
 
     void Update()
     {
-        // Move the rail car if active
         if (isMoving)
         {
             MoveBetweenPoints();
-
-            // Move player along if attached
-            if (isPlayerAttached && player != null)
-            {
-                player.position = new Vector3(
-                    transform.position.x,
-                    player.position.y,
-                    player.position.z
-                );
-            }
+            MoveAttachedPlayer();
         }
     }
 
     private void MoveBetweenPoints()
     {
         Transform target = movingToB ? pointB : pointA;
+
         transform.position = Vector2.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
 
+        // Stop when we reach the target
         if (Vector2.Distance(transform.position, target.position) < 0.05f)
         {
-            movingToB = !movingToB;
+            isMoving = false;
+
+            // If player is attached and we've arrived, detach them
+            if (isPlayerAttached)
+                DetachPlayer();
+
+            Debug.Log($"Rail car arrived at {(movingToB ? "Point B" : "Point A")}");
+        }
+    }
+
+    private void MoveAttachedPlayer()
+    {
+        if (isPlayerAttached && player != null)
+        {
+            player.position = new Vector3(
+                transform.position.x,
+                player.position.y,
+                player.position.z
+            );
         }
     }
 
@@ -81,24 +90,23 @@ public class RailCar : MonoBehaviour
 
     private void OnMouseDown()
     {
-        isSelected = !isSelected;
-
-        if (spriteRenderer != null)
-            spriteRenderer.color = isSelected ? selectedColor : defaultColor;
-
-        if (isSelected)
+        // Toggle direction when clicked
+        if (!isMoving)
         {
-            // Start moving when selected
+            movingToB = !movingToB; // flip direction
             isMoving = true;
 
-            // Attach player if close enough
+            // Change visual and attach player if near
+            if (spriteRenderer != null)
+                spriteRenderer.color = selectedColor;
+
             TryAttachPlayer();
         }
         else
         {
-            // Stop movement and detach player
-            isMoving = false;
-            DetachPlayer();
+            // Optional: ignore clicks while moving, or stop mid-way
+            // For now, we’ll ignore mid-move clicks
+            Debug.Log("Rail car is moving, wait until it stops to click again.");
         }
     }
 
@@ -119,6 +127,9 @@ public class RailCar : MonoBehaviour
         if (isPlayerAttached)
         {
             isPlayerAttached = false;
+            if (spriteRenderer != null)
+                spriteRenderer.color = defaultColor;
+
             Debug.Log("Player detached from rail car!");
         }
     }
