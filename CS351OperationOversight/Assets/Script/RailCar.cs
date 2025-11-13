@@ -9,33 +9,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Collider2D))]
+
 public class RailCar : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public Transform pointA;
-    public Transform pointB;
-    public float moveSpeed = 2f;
+    public Transform pointA;          // Starting point
+    public Transform pointB;          // Destination
+    public float moveSpeed = 2f;      // Speed of movement
 
-    [Header("Player Attachment")]
-    public Transform player;
-    public float attachDistance = 1.5f;
-    private bool isPlayerAttached = false;
+    
+    public Transform player;          // Player reference
+    public float attachDistance = 1.5f; // Max distance to attach
 
-    [Header("Visuals")]
+    
     public Color defaultColor = Color.white;
-    public Color selectedColor = Color.yellow;
+    public Color ridingColor = Color.yellow;
 
-    private bool isSelected = false;
     private bool isMoving = false;
     private bool movingToB = true;
+    private bool isPlayerAttached = false;
     private SpriteRenderer spriteRenderer;
+    private Rigidbody2D playerRb;
 
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
             spriteRenderer.color = defaultColor;
+
+        if (player != null)
+            playerRb = player.GetComponent<Rigidbody2D>();
     }
 
     void Update()
@@ -43,38 +46,17 @@ public class RailCar : MonoBehaviour
         if (isMoving)
         {
             MoveBetweenPoints();
-            MoveAttachedPlayer();
         }
     }
 
     private void MoveBetweenPoints()
     {
         Transform target = movingToB ? pointB : pointA;
-
         transform.position = Vector2.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
 
-        // Stop when we reach the target
         if (Vector2.Distance(transform.position, target.position) < 0.05f)
         {
-            isMoving = false;
-
-            // If player is attached and we've arrived, detach them
-            if (isPlayerAttached)
-                DetachPlayer();
-
-            Debug.Log($"Rail car arrived at {(movingToB ? "Point B" : "Point A")}");
-        }
-    }
-
-    private void MoveAttachedPlayer()
-    {
-        if (isPlayerAttached && player != null)
-        {
-            player.position = new Vector3(
-                transform.position.x,
-                player.position.y,
-                player.position.z
-            );
+            movingToB = !movingToB; // Reverse direction at endpoints
         }
     }
 
@@ -90,47 +72,66 @@ public class RailCar : MonoBehaviour
 
     private void OnMouseDown()
     {
-        // Toggle direction when clicked
-        if (!isMoving)
+        if (player == null) return;
+
+        if (isPlayerAttached)
         {
-            movingToB = !movingToB; // flip direction
-            isMoving = true;
-
-            // Change visual and attach player if near
-            if (spriteRenderer != null)
-                spriteRenderer.color = selectedColor;
-
-            TryAttachPlayer();
+            DetachPlayer(); // Hop off
         }
         else
         {
-            // Optional: ignore clicks while moving, or stop mid-way
-            // For now, we’ll ignore mid-move clicks
-            Debug.Log("Rail car is moving, wait until it stops to click again.");
+            TryAttachPlayer(); // Hop on if nearby
         }
     }
 
     private void TryAttachPlayer()
     {
-        if (player == null) return;
-
         float distance = Vector2.Distance(transform.position, player.position);
         if (distance <= attachDistance)
         {
             isPlayerAttached = true;
-            Debug.Log("Player attached to rail car!");
+            isMoving = true; // Start moving when player hops on
+            player.SetParent(transform);
+
+            // Freeze physics to prevent player falling
+            if (playerRb != null)
+            {
+                playerRb.isKinematic = true;
+                playerRb.velocity = Vector2.zero;
+            }
+
+            // Adjust local position
+            Vector3 localPos = player.localPosition;
+            localPos.y = 0.5f; // tweak as needed
+            player.localPosition = localPos;
+
+            if (spriteRenderer != null)
+                spriteRenderer.color = ridingColor;
+
+            Debug.Log("Player attached. Rail car started moving!");
         }
     }
 
     private void DetachPlayer()
     {
-        if (isPlayerAttached)
-        {
-            isPlayerAttached = false;
-            if (spriteRenderer != null)
-                spriteRenderer.color = defaultColor;
+        isPlayerAttached = false;
+        isMoving = false; // Stop moving immediately
+        player.SetParent(null);
 
-            Debug.Log("Player detached from rail car!");
-        }
+        // Re-enable physics
+        if (playerRb != null)
+            playerRb.isKinematic = false;
+
+        if (spriteRenderer != null)
+            spriteRenderer.color = defaultColor;
+
+        Debug.Log("Player detached. Rail car stopped.");
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        if (pointA != null) Gizmos.DrawSphere(pointA.position, 0.2f);
+        if (pointB != null) Gizmos.DrawSphere(pointB.position, 0.2f);
     }
 }
