@@ -578,8 +578,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c59bca5fd7b0394b91a715876f2f63d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultCursorTexture: {fileID: 2800000, guid: 2e71a8202d3b4a3448ec85ced5a40265, type: 3}
-  hoverCursorTexture: {fileID: 2800000, guid: 8ea795c067613354898068091ffc7130, type: 3}
+  defaultCursorTexture: {fileID: 2800000, guid: 908981331738ea1499209188b61619d5, type: 3}
+  hoverCursorTexture: {fileID: 2800000, guid: 3dde54b3a88252a45838db0b10ed79ce, type: 3}
   hotSpot: {x: 0, y: 0}
   cursorMode: 0
 --- !u!4 &1188027047
@@ -2392,19 +2392,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3077929249179713051, guid: 88db804bce6c6904e97c3c0a92169efe, type: 3}
       propertyPath: m_Size.x
-      value: 0.6552838
+      value: 0.5028178
       objectReference: {fileID: 0}
     - target: {fileID: 3077929249179713051, guid: 88db804bce6c6904e97c3c0a92169efe, type: 3}
       propertyPath: m_Size.y
-      value: 1.1121638
+      value: 1.044568
       objectReference: {fileID: 0}
     - target: {fileID: 3077929249179713051, guid: 88db804bce6c6904e97c3c0a92169efe, type: 3}
       propertyPath: m_Offset.x
-      value: -0.037469093
+      value: -0.0028034847
       objectReference: {fileID: 0}
     - target: {fileID: 3077929249179713051, guid: 88db804bce6c6904e97c3c0a92169efe, type: 3}
       propertyPath: m_Offset.y
-      value: -0.035513267
+      value: -0.05466199
+      objectReference: {fileID: 0}
+    - target: {fileID: 3077929249725741587, guid: 88db804bce6c6904e97c3c0a92169efe, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.249
+      objectReference: {fileID: 0}
+    - target: {fileID: 3077929250162658666, guid: 88db804bce6c6904e97c3c0a92169efe, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.583
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 88db804bce6c6904e97c3c0a92169efe, type: 3}
