@@ -1,3 +1,8 @@
+/* Author: Benjamin Lockard
+ * Date: 11/13/2025
+ * Assignment: P06
+ * Description: Camera tracks player
+ */
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

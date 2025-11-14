@@ -10,7 +10,10 @@ using UnityEngine;
 
 public class PlatformerControls : MonoBehaviour
 {
-    public float moveSpeed, jumpForce, wallJumpHoriForce, wallJumpVertForce, wjHoriPause, deathPause;
+    // member vars & references ----------------------------------------------------------------------------------------
+
+    public float moveSpeed, jumpForce, wallJumpHoriForce, wallJumpVertForce, wjHoriPause, springPause, deathPause;
+
 
     public LayerMask groundLayer;
 
@@ -32,7 +35,7 @@ public class PlatformerControls : MonoBehaviour
     private float jumpBufferCounter, coyoteTimeCounter;
     public float jumpBufferTime = 0.10f, coyoteTimeDuration = 0.10f;
 
-    private Vector3 currentRespawnPosition;
+    private Vector3 currentRespawnPosition = Vector3.zero;
 
     //private AudioSource playerAudio;
 
@@ -40,18 +43,25 @@ public class PlatformerControls : MonoBehaviour
 
     //private Animator animator;
 
+    // general functions ----------------------------------------------------------------------------------------
 
-    IEnumerator justWallJumped()
+    IEnumerator blockInput(float delay)
     {
         inputBlocked = true;
-        yield return new WaitForSeconds(wjHoriPause);
+        yield return new WaitForSeconds(delay);
         inputBlocked = false;
     }
+
+    public void setCheckpoint(Vector3 checkpointPosition)
+    {
+        currentRespawnPosition = checkpointPosition;
+    }
+
 
     public void Die(Vector3 hazardPosition)
     {
         inputBlocked = true;
- 
+
         Vector2 direction = transform.position - hazardPosition;
         direction.Normalize();
 
@@ -74,10 +84,19 @@ public class PlatformerControls : MonoBehaviour
         //Consider adding screen transition
         transform.position = currentRespawnPosition;
 
+        rb.velocity = Vector2.zero;
+
         inputBlocked = false;
     }
 
-    // Start is called before the first frame update
+    public void launch(Vector2 direction, float magnitude, bool isHorisontal)
+    {
+        if (isHorisontal)
+            StartCoroutine(blockInput(springPause));
+        rb.AddForce(direction * magnitude, ForceMode2D.Impulse);
+    }
+
+    // runtime functions ----------------------------------------------------------------------------------------
     void Start()
     {
         groundCheckRadius = 0.02f;
@@ -121,9 +140,10 @@ public class PlatformerControls : MonoBehaviour
             wallJumpRequest = true;
         }
 
-        if (verticalInputReleased && rb.velocity.y > 0) { 
-                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y / vertTransModifier);
-        } 
+        if (verticalInputReleased && rb.velocity.y > 0)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y / vertTransModifier);
+        }
 
         //    //playerAudio.PlayOneShot(jumpSound, 1.0f)
     }
@@ -132,7 +152,7 @@ public class PlatformerControls : MonoBehaviour
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         isOnWall = Physics2D.OverlapCircle(wallJumpCheck.position, wallCheckRadius, groundLayer);
-        
+
         if (!inputBlocked)
             rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
 
@@ -146,7 +166,7 @@ public class PlatformerControls : MonoBehaviour
         else if (wallJumpRequest)
         {
             wallJumpRequest = false;
-            StartCoroutine(justWallJumped());
+            StartCoroutine(blockInput(wjHoriPause));
             rb.velocity = new Vector2(wallJumpHoriForce * directionalNegation, wallJumpVertForce);
             jumpBufferCounter = 0.0f;
         }
@@ -168,5 +188,7 @@ public class PlatformerControls : MonoBehaviour
             directionalNegation = 1.0f;
         }
     }
+
+    // interaction functionality ----------------------------------------------------------------------------------------
 
 }

@@ -136,11 +136,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f94e8b3dadf9574ca53a9ca3863afe1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 7
+  moveSpeed: 7.5
   jumpForce: 10
   wallJumpHoriForce: 5
   wallJumpVertForce: 7.5
   wjHoriPause: 0.125
+  springPause: 0.25
+  deathPause: 0.25
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -148,6 +150,7 @@ MonoBehaviour:
   wallJumpCheck: {fileID: 3077929249725741587}
   groundCheckRadius: 0
   wallCheckRadius: 0
+  knockbackForce: 15
   vertTransModifier: 3
   jumpBufferTime: 0.125
   coyoteTimeDuration: 0.125
