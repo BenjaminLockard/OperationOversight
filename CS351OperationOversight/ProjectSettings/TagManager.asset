@@ -41,3 +41,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Backgroundfar
+    uniqueID: 4181063629
+    locked: 0
+  - name: Decoration
+    uniqueID: 966022547
+    locked: 0

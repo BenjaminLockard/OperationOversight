@@ -41,7 +41,7 @@ public class PlatformerControls : MonoBehaviour
 
     // public AudioClip jumpSound;
 
-    //private Animator animator;
+    private Animator animator;
 
     // general functions ----------------------------------------------------------------------------------------
 
@@ -109,7 +109,7 @@ public class PlatformerControls : MonoBehaviour
         }
 
         //playerAudio = GetComponent<AudioSource>();
-        //animator = GetComponent<Animator>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -171,11 +171,11 @@ public class PlatformerControls : MonoBehaviour
             jumpBufferCounter = 0.0f;
         }
 
-        //animator.SetFloat("xVelocityAbs", Mathf.Abs(rb.velocity.x));
+        animator.SetFloat("XVelocityAbs", Mathf.Abs(rb.velocity.x));
 
-        //animator.SetFloat("yVelocity", rb.velocity.y);
+        animator.SetFloat("YVelocity", rb.velocity.y + 0.5f);
 
-        //animator.SetBool("onGround", isGrounded);       
+        animator.SetBool("OnGround", isGrounded);       
 
         if (horizontalInput > 0)
         {
