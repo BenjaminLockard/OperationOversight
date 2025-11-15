@@ -18,7 +18,7 @@ public class CustomCursorManager : MonoBehaviour
     public Texture2D defaultCursorTexture;
     public Texture2D hoverCursorTexture;
 
-    public Vector2 hotSpot = Vector2.zero;
+    private Vector2 hotSpot = new Vector2(64, 64);
     public CursorMode cursorMode = CursorMode.Auto;
 
     private bool isOverUI = false;

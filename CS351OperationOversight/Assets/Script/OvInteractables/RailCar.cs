@@ -14,7 +14,7 @@ public class RailCar : MonoBehaviour
     [Header("Movement Settings")]
     public Transform pointA;
     public Transform pointB;
-    public float moveSpeed = 2f;
+    public float moveSpeed;
 
     [Header("Player Settings")]
     public Transform player;         // Assign your player here
