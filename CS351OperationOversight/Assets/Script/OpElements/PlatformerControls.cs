@@ -18,7 +18,7 @@ public class PlatformerControls : MonoBehaviour
     public LayerMask groundLayer;
 
     public Transform groundCheck, wallJumpCheck;
-    private float directionalNegation = -1.0f;
+    private float storedNegation, directionalNegation = -1.0f;
 
     public float groundCheckRadius, wallCheckRadius;
 
@@ -99,8 +99,8 @@ public class PlatformerControls : MonoBehaviour
     // runtime functions ----------------------------------------------------------------------------------------
     void Start()
     {
-        groundCheckRadius = 0.02f;
-        wallCheckRadius = 0.15f;
+        groundCheckRadius = 0.05f;
+        wallCheckRadius = 0.25f;
         rb = GetComponent<Rigidbody2D>();
 
         if (groundCheck == null || wallJumpCheck == null)
@@ -138,6 +138,7 @@ public class PlatformerControls : MonoBehaviour
         else if (isOnWall && jumpBufferCounter > 0.0f && !inputBlocked)
         {
             wallJumpRequest = true;
+            storedNegation = directionalNegation;
         }
 
         if (verticalInputReleased && rb.velocity.y > 0)
@@ -167,7 +168,7 @@ public class PlatformerControls : MonoBehaviour
         {
             wallJumpRequest = false;
             StartCoroutine(blockInput(wjHoriPause));
-            rb.velocity = new Vector2(wallJumpHoriForce * directionalNegation, wallJumpVertForce);
+            rb.velocity = new Vector2(wallJumpHoriForce * storedNegation, wallJumpVertForce);
             jumpBufferCounter = 0.0f;
         }
 
