@@ -11,6 +11,11 @@ using UnityEngine;
 
 public class RailCar : MonoBehaviour
 {
+
+    //animation
+    private Animator railAnimator;
+
+
     [Header("Movement Settings")]
     public Transform pointA;
     public Transform pointB;
@@ -36,6 +41,9 @@ public class RailCar : MonoBehaviour
 
     void Start()
     {
+        railAnimator = GetComponent<Animator>();
+
+
         if (pointA != null)
             transform.position = pointA.position;
 
@@ -78,6 +86,8 @@ public class RailCar : MonoBehaviour
         if (Vector3.Distance(transform.position, targetPos) < 0.01f)
         {
             isMoving = false;
+            if (railAnimator != null)
+                railAnimator.SetBool("IsMoving", false);
         }
 
         previousPosition = transform.position;
@@ -85,6 +95,12 @@ public class RailCar : MonoBehaviour
 
     void OnMouseDown()
     {
+        if (railAnimator != null)
+        {
+            railAnimator.SetBool("IsMoving", true);
+        }
+
+
         // Toggle railcar movement
         movingToB = !movingToB;
         targetPos = movingToB ? pointB.position : pointA.position;

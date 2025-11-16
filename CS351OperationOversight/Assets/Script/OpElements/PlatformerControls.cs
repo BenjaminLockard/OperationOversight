@@ -176,7 +176,9 @@ public class PlatformerControls : MonoBehaviour
 
         animator.SetFloat("YVelocity", rb.velocity.y + 0.5f);
 
-        animator.SetBool("OnGround", isGrounded);       
+        animator.SetBool("OnGround", isGrounded);    
+        
+        animator.SetBool("OnWall", isOnWall);
 
         if (horizontalInput > 0)
         {
