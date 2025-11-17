@@ -45,10 +45,10 @@ public class RailCar : MonoBehaviour
 
 
         if (pointA != null)
-            transform.position = pointA.position;
+            transform.position = pointA.position + new Vector3(0f, -0.5f, 0f);
 
-        targetPos = pointB.position;
-        previousPosition = transform.position;
+        targetPos = pointB.position + new Vector3(0f, -0.5f, 0f);
+        previousPosition = transform.position + new Vector3(0f, -0.5f, 0f);
 
         if (player != null)
             playerRb = player.GetComponent<Rigidbody2D>();
@@ -72,7 +72,7 @@ public class RailCar : MonoBehaviour
 
     void MoveRailCar()
     {
-        Vector3 newPos = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
+        Vector3 newPos = Vector3.MoveTowards(transform.position, targetPos + new Vector3(0f, -0.5f, 0f), moveSpeed * Time.deltaTime);
         Vector3 delta = newPos - transform.position;
 
         transform.position = newPos;
@@ -83,7 +83,7 @@ public class RailCar : MonoBehaviour
             player.position += delta;
         }
 
-        if (Vector3.Distance(transform.position, targetPos) < 0.01f)
+        if (Vector3.Distance(transform.position, targetPos + new Vector3(0f, -0.5f, 0f)) < 0.01f)
         {
             isMoving = false;
             if (railAnimator != null)
