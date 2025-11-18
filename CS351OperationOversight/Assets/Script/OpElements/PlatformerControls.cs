@@ -13,12 +13,12 @@ public class PlatformerControls : MonoBehaviour
     // member vars & references ----------------------------------------------------------------------------------------
 
     public float moveSpeed, jumpForce, wallJumpHoriForce, wallJumpVertForce, wjHoriPause, springPause, deathPause;
-
+    public float acceleration, deceleration;
 
     public LayerMask groundLayer;
 
     public Transform groundCheck, wallJumpCheck;
-    private float storedNegation, directionalNegation = -1.0f;
+    private float directionalNegation;
 
     public float groundCheckRadius, wallCheckRadius;
 
@@ -89,9 +89,9 @@ public class PlatformerControls : MonoBehaviour
         inputBlocked = false;
     }
 
-    public void launch(Vector2 direction, float magnitude, bool isHorisontal)
+    public void launch(Vector2 direction, float magnitude, bool isHorizontal)
     {
-        if (isHorisontal)
+        if (isHorizontal)
             StartCoroutine(blockInput(springPause));
         rb.AddForce(direction * magnitude, ForceMode2D.Impulse);
     }
@@ -138,7 +138,6 @@ public class PlatformerControls : MonoBehaviour
         else if (isOnWall && jumpBufferCounter > 0.0f && !inputBlocked)
         {
             wallJumpRequest = true;
-            storedNegation = directionalNegation;
         }
 
         if (verticalInputReleased && rb.velocity.y > 0)
@@ -155,7 +154,22 @@ public class PlatformerControls : MonoBehaviour
         isOnWall = Physics2D.OverlapCircle(wallJumpCheck.position, wallCheckRadius, groundLayer);
 
         if (!inputBlocked)
-            rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
+        {//uses acceleration & deceleration
+            float targetSpeed = horizontalInput * moveSpeed;
+            float speedDifference = targetSpeed - rb.velocity.x;
+            float currentAcceleration = Mathf.Abs(targetSpeed) > 0.01f ? acceleration : deceleration;
+
+            if (Mathf.Abs(horizontalInput) > 0.01f && Mathf.Sign(horizontalInput) != Mathf.Sign(rb.velocity.x))
+            {
+                currentAcceleration = acceleration; // Prioritize acceleration when changing direction
+            }
+
+            // add force rather than set, allows concurrent multiple sources of velocity
+            rb.AddForce(Vector2.right * (speedDifference * currentAcceleration), ForceMode2D.Force);
+
+            // clamp horizontal velocity, ensure it remains within reasonable bounds
+            //rb.velocity = new Vector2(Mathf.Clamp(rb.velocity.x, -moveSpeed, moveSpeed), rb.velocity.y);
+        }
 
         if (jumpRequest)
         {
@@ -168,7 +182,9 @@ public class PlatformerControls : MonoBehaviour
         {
             wallJumpRequest = false;
             StartCoroutine(blockInput(wjHoriPause));
-            rb.velocity = new Vector2(wallJumpHoriForce * storedNegation, wallJumpVertForce);
+
+            directionalNegation = wallJumpCheck.position.x > transform.position.x ? -1f : 1f;
+            rb.AddForce(new Vector2(wallJumpHoriForce * directionalNegation, wallJumpVertForce), ForceMode2D.Impulse);
             jumpBufferCounter = 0.0f;
         }
 
@@ -183,12 +199,10 @@ public class PlatformerControls : MonoBehaviour
         if (horizontalInput > 0)
         {
             transform.rotation = Quaternion.Euler(0, 0, 0); //right
-            directionalNegation = -1.0f;
         }
         else if (horizontalInput < 0)
         {
             transform.rotation = Quaternion.Euler(0, 180, 0); //left
-            directionalNegation = 1.0f;
         }
     }
 
