@@ -12,8 +12,7 @@ public class PlatformerControls : MonoBehaviour
 {
     // member vars & references ----------------------------------------------------------------------------------------
 
-    public float moveSpeed, jumpForce, wallJumpHoriForce, wallJumpVertForce, wjHoriPause, springPause, deathPause;
-    public float acceleration, deceleration;
+    public float moveSpeed, jumpForce, wallJumpHoriForce, wallJumpVertForce, wjHoriPause, springPause, deathPause, acceleration, deceleration;
 
     public LayerMask groundLayer;
 
@@ -28,18 +27,15 @@ public class PlatformerControls : MonoBehaviour
 
     private float horizontalInput;
     public float vertTransModifier;
-    private bool verticalInput, verticalInputReleased;
-
-    private bool isGrounded, isOnWall, jumpRequest, wallJumpRequest, inputBlocked = false, negationChangeBlocked;
+    private bool verticalInput, verticalInputReleased, isGrounded, isOnWall, jumpRequest, wallJumpRequest, inputBlocked = false, negationChangeBlocked, landSoundBlocked;
 
     private float jumpBufferCounter, coyoteTimeCounter;
     public float jumpBufferTime = 0.10f, coyoteTimeDuration = 0.10f;
 
     private Vector3 currentRespawnPosition = Vector3.zero;
 
-    //private AudioSource playerAudio;
-
-    // public AudioClip jumpSound;
+    private AudioSource playerAudio;
+    public AudioClip jumpSound, landSound, dieSound, runSound;
 
     private Animator animator;
 
@@ -62,6 +58,7 @@ public class PlatformerControls : MonoBehaviour
     {
         inputBlocked = true;
 
+        playerAudio.PlayOneShot(dieSound, 0.25f);
         Vector2 direction = transform.position - hazardPosition;
         direction.Normalize();
 
@@ -107,7 +104,8 @@ public class PlatformerControls : MonoBehaviour
     // runtime functions ----------------------------------------------------------------------------------------
     void Start()
     {
-        groundCheckRadius = 0.05f;
+        playerAudio = GetComponent<AudioSource>();
+        groundCheckRadius = 0.1f;
         wallCheckRadius = 0.65f;
         rb = GetComponent<Rigidbody2D>();
 
@@ -160,6 +158,20 @@ public class PlatformerControls : MonoBehaviour
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         isOnWall = Physics2D.OverlapCircle(wallJumpCheck.position, wallCheckRadius, groundLayer);
+        if (isGrounded)
+        {
+            if (!landSoundBlocked)
+            {
+                playerAudio.PlayOneShot(landSound, 0.35f);
+                landSoundBlocked = true;
+            }
+        }
+        else
+        {
+             landSoundBlocked = false;
+        }
+
+
         if (isOnWall)
         {
             if (!negationChangeBlocked) {
@@ -193,6 +205,8 @@ public class PlatformerControls : MonoBehaviour
 
         if (jumpRequest)
         {
+            playerAudio.PlayOneShot(jumpSound, 0.75f);
+
             jumpRequest = false;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             jumpBufferCounter = 0.0f;
@@ -200,6 +214,8 @@ public class PlatformerControls : MonoBehaviour
         }
         else if (wallJumpRequest)
         {
+            playerAudio.PlayOneShot(jumpSound, 0.75f);
+
             wallJumpRequest = false;
             StartCoroutine(blockInput(wjHoriPause));
 
