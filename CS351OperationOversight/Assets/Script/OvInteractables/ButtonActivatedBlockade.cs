@@ -21,18 +21,19 @@ public class ButtonActivatedBlockade : MonoBehaviour
     public Color activeColor = Color.green;
 
     
-    public bool isActive = false; 
+    public bool isActive = true; 
 
     private GameObject blockadeInstance;
     private bool isAnimating = false;
 
     void Start()
     {
-        
+        isActive = true;
+
         if (blockadePrefab != null)
         {
             blockadeInstance = Instantiate(blockadePrefab, Vector3.zero, Quaternion.identity);
-            blockadeInstance.SetActive(false);
+            blockadeInstance.SetActive(true);
         }
         else
         {
@@ -42,22 +43,41 @@ public class ButtonActivatedBlockade : MonoBehaviour
         // Set button initial color
         if (buttonSprite != null)
             buttonSprite.color = inactiveColor;
+	StartCoroutine(AnimateBlockade(true));
     }
+	
 
 
 public void ResetBlockade()
 {
-    if (isActive)
-    {
-        // If it's active, turn it off without toggling button color twice
-        StartCoroutine(AnimateBlockade(false));
-        isActive = false;
+    // Stop any running animations
+    StopAllCoroutines();
 
-        if (buttonSprite != null)
-            buttonSprite.color = inactiveColor;
-    }
+    // Set active state
+    isActive = true;
+
+    // Activate the blockade object
+    blockadeInstance.SetActive(true);
+
+    // Set button to active color
+    if (buttonSprite != null)
+        buttonSprite.color = activeColor;
+
+    // Recalculate correct position/orientation/length
+    Vector3 midpoint = (pointA.position + pointB.position) / 2f;
+    blockadeInstance.transform.position = midpoint;
+
+    Vector3 direction = pointB.position - pointA.position;
+    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+    blockadeInstance.transform.rotation = Quaternion.Euler(0, 0, angle);
+
+    float distance = direction.magnitude;
+    blockadeInstance.transform.localScale = new Vector3(
+        distance,
+        blockadeInstance.transform.localScale.y,
+        blockadeInstance.transform.localScale.z
+    );
 }
-
 
 
 
