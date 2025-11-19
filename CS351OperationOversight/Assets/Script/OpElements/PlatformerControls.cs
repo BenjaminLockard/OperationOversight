@@ -30,7 +30,7 @@ public class PlatformerControls : MonoBehaviour
     public float vertTransModifier;
     private bool verticalInput, verticalInputReleased;
 
-    private bool isGrounded, isOnWall, jumpRequest, wallJumpRequest, inputBlocked = false;
+    private bool isGrounded, isOnWall, jumpRequest, wallJumpRequest, inputBlocked = false, negationChangeBlocked;
 
     private float jumpBufferCounter, coyoteTimeCounter;
     public float jumpBufferTime = 0.10f, coyoteTimeDuration = 0.10f;
@@ -67,14 +67,14 @@ public class PlatformerControls : MonoBehaviour
 
         direction.y = direction.y * 0.5f + 0.5f;
         rb.AddForce(direction * knockbackForce, ForceMode2D.Impulse);
-	
-	//Cole added following lines 11/18 to reset all activated hazards when player dies
-	ButtonActivatedBlockade[] allBlockades = FindObjectsOfType<ButtonActivatedBlockade>();
 
-	foreach (ButtonActivatedBlockade blockade in allBlockades)
-	{
-	blockade.ResetBlockade();
-	}
+        //Cole added following lines 11/18 to reset all activated hazards when player dies
+        ButtonActivatedBlockade[] allBlockades = FindObjectsOfType<ButtonActivatedBlockade>();
+
+        foreach (ButtonActivatedBlockade blockade in allBlockades)
+        {
+            blockade.ResetBlockade();
+        }
 
 
         StartCoroutine(respawn());
@@ -108,7 +108,7 @@ public class PlatformerControls : MonoBehaviour
     void Start()
     {
         groundCheckRadius = 0.05f;
-        wallCheckRadius = 0.25f;
+        wallCheckRadius = 0.65f;
         rb = GetComponent<Rigidbody2D>();
 
         if (groundCheck == null || wallJumpCheck == null)
@@ -160,6 +160,18 @@ public class PlatformerControls : MonoBehaviour
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         isOnWall = Physics2D.OverlapCircle(wallJumpCheck.position, wallCheckRadius, groundLayer);
+        if (isOnWall)
+        {
+            if (!negationChangeBlocked) {
+                directionalNegation = wallJumpCheck.position.x > transform.position.x ? -1f : 1f;
+
+                negationChangeBlocked = true;
+            }
+        } else
+        {
+            negationChangeBlocked = false;
+        }
+
 
         if (!inputBlocked)
         {//uses acceleration & deceleration
@@ -191,7 +203,7 @@ public class PlatformerControls : MonoBehaviour
             wallJumpRequest = false;
             StartCoroutine(blockInput(wjHoriPause));
 
-            directionalNegation = wallJumpCheck.position.x > transform.position.x ? -1f : 1f;
+            //directionalNegation = wallJumpCheck.position.x > transform.position.x ? -1f : 1f;
             rb.AddForce(new Vector2(wallJumpHoriForce * directionalNegation, wallJumpVertForce), ForceMode2D.Impulse);
             jumpBufferCounter = 0.0f;
         }
@@ -200,8 +212,8 @@ public class PlatformerControls : MonoBehaviour
 
         animator.SetFloat("YVelocity", rb.velocity.y + 0.5f);
 
-        animator.SetBool("OnGround", isGrounded);    
-        
+        animator.SetBool("OnGround", isGrounded);
+
         animator.SetBool("OnWall", isOnWall);
 
         if (horizontalInput > 0)
@@ -214,6 +226,7 @@ public class PlatformerControls : MonoBehaviour
         }
     }
 
-    // interaction functionality ----------------------------------------------------------------------------------------
 
-}
+        // interaction functionality ----------------------------------------------------------------------------------------
+
+    }
