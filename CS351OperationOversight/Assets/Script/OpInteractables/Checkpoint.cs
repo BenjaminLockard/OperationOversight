@@ -27,7 +27,7 @@ public class Checkpoint : MonoBehaviour
     }
     IEnumerator Cooldown()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.4f);
         animator.SetBool("Activate", false);
     }
 

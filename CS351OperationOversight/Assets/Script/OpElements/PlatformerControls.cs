@@ -27,7 +27,7 @@ public class PlatformerControls : MonoBehaviour
 
     private float horizontalInput;
     public float vertTransModifier;
-    private bool verticalInput, verticalInputReleased, isGrounded, isOnWall, jumpRequest, wallJumpRequest, inputBlocked = false, negationChangeBlocked, landSoundBlocked;
+    private bool verticalInput, verticalInputReleased, isGrounded, isOnWall, jumpRequest, wallJumpRequest, inputBlocked = false, negationChangeBlocked, landSoundBlocked, runStartBlocked;
 
     private float jumpBufferCounter, coyoteTimeCounter;
     public float jumpBufferTime = 0.10f, coyoteTimeDuration = 0.10f;
@@ -92,6 +92,17 @@ public class PlatformerControls : MonoBehaviour
         rb.velocity = Vector2.zero;
 
         inputBlocked = false;
+    }
+
+    IEnumerator audiblyWalk()
+    {
+        runStartBlocked = true;
+        while (isGrounded && horizontalInput != 0)
+        {
+            playerAudio.PlayOneShot(landSound, 0.1f);
+            yield return new WaitForSeconds(0.25f);
+        }
+        runStartBlocked = false;
     }
 
     public void launch(Vector2 direction, float magnitude, bool isHorizontal)
@@ -162,7 +173,7 @@ public class PlatformerControls : MonoBehaviour
         {
             if (!landSoundBlocked)
             {
-                playerAudio.PlayOneShot(landSound, 0.35f);
+                playerAudio.PlayOneShot(landSound, 0.3f);
                 landSoundBlocked = true;
             }
         }
@@ -232,6 +243,10 @@ public class PlatformerControls : MonoBehaviour
 
         animator.SetBool("OnWall", isOnWall);
 
+        if (horizontalInput != 0 && !runStartBlocked)
+        {
+            StartCoroutine(audiblyWalk());
+        }
         if (horizontalInput > 0)
         {
             transform.rotation = Quaternion.Euler(0, 0, 0); //right
