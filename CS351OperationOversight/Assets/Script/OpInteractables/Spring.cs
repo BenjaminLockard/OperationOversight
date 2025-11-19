@@ -14,7 +14,8 @@ public class Spring : MonoBehaviour
     private Vector2 direction;
     private bool isHori;
 
-    
+    private Animator animator;
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -45,6 +46,8 @@ public class Spring : MonoBehaviour
             }
 
             player.launch(direction, launchPower, isHori);
+            animator = GetComponent<Animator>();
+            animator.SetTrigger("Activate");
         }
     }
 

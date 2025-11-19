@@ -37053,7 +37053,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultCursorTexture: {fileID: 2800000, guid: 908981331738ea1499209188b61619d5, type: 3}
-  hoverCursorTexture: {fileID: 2800000, guid: 3dde54b3a88252a45838db0b10ed79ce, type: 3}
+  hoverCursorTexture: {fileID: 2800000, guid: 05d7a8c7536fe034a83743db2e3365b6, type: 3}
   cursorMode: 0
 --- !u!4 &1188027047
 Transform:
