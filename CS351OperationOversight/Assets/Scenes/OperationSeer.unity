@@ -58326,7 +58326,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3077929249725741587, guid: 88db804bce6c6904e97c3c0a92169efe, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.249
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 3077929250162658666, guid: 88db804bce6c6904e97c3c0a92169efe, type: 3}
       propertyPath: m_LocalPosition.y
@@ -59079,6 +59079,10 @@ PrefabInstance:
     - target: {fileID: 9024771078683308188, guid: ba5751b07c085d741a0deada1a36347f, type: 3}
       propertyPath: m_Name
       value: Blockade
+      objectReference: {fileID: 0}
+    - target: {fileID: 9024771078683308188, guid: ba5751b07c085d741a0deada1a36347f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9024771078683308189, guid: ba5751b07c085d741a0deada1a36347f, type: 3}
       propertyPath: m_RootOrder
