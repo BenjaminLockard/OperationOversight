@@ -67,6 +67,14 @@ public class PlatformerControls : MonoBehaviour
 
         direction.y = direction.y * 0.5f + 0.5f;
         rb.AddForce(direction * knockbackForce, ForceMode2D.Impulse);
+	
+	//Cole added following lines 11/18 to reset all activated hazards when player dies
+	ButtonActivatedBlockade[] allBlockades = FindObjectsOfType<ButtonActivatedBlockade>();
+
+	foreach (ButtonActivatedBlockade blockade in allBlockades)
+	{
+	blockade.ResetBlockade();
+	}
 
 
         StartCoroutine(respawn());
