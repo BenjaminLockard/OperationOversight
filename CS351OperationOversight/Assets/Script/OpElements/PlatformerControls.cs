@@ -27,7 +27,7 @@ public class PlatformerControls : MonoBehaviour
 
     private float horizontalInput;
     public float vertTransModifier;
-    private bool verticalInput, verticalInputReleased, isGrounded, isOnWall, jumpRequest, wallJumpRequest, inputBlocked = false, negationChangeBlocked, landSoundBlocked, runStartBlocked;
+    private bool verticalInput, verticalInputReleased, isGrounded, isOnWall, jumpRequest, wallJumpRequest, inputBlocked = false, negationChangeBlocked, landSoundBlocked, runStartBlocked, airJumpBlocked;
 
     private float jumpBufferCounter, coyoteTimeCounter;
     public float jumpBufferTime = 0.10f, coyoteTimeDuration = 0.10f;
@@ -35,7 +35,7 @@ public class PlatformerControls : MonoBehaviour
     private Vector3 currentRespawnPosition = Vector3.zero;
 
     private AudioSource playerAudio;
-    public AudioClip jumpSound, landSound, dieSound, runSound;
+    public AudioClip jumpSound, airJumpSound, landSound, dieSound, runSound;
 
     private Animator animator;
 
@@ -99,7 +99,7 @@ public class PlatformerControls : MonoBehaviour
         runStartBlocked = true;
         while (isGrounded && horizontalInput != 0)
         {
-            playerAudio.PlayOneShot(landSound, 0.1f);
+            playerAudio.PlayOneShot(landSound, 0.05f);
             yield return new WaitForSeconds(0.25f);
         }
         runStartBlocked = false;
@@ -171,9 +171,10 @@ public class PlatformerControls : MonoBehaviour
         isOnWall = Physics2D.OverlapCircle(wallJumpCheck.position, wallCheckRadius, groundLayer);
         if (isGrounded)
         {
+            airJumpBlocked = false;
             if (!landSoundBlocked)
             {
-                playerAudio.PlayOneShot(landSound, 0.3f);
+                playerAudio.PlayOneShot(landSound, 0.25f);
                 landSoundBlocked = true;
             }
         }
@@ -216,7 +217,7 @@ public class PlatformerControls : MonoBehaviour
 
         if (jumpRequest)
         {
-            playerAudio.PlayOneShot(jumpSound, 0.75f);
+            playerAudio.PlayOneShot(jumpSound, 0.45f);
 
             jumpRequest = false;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
@@ -225,7 +226,7 @@ public class PlatformerControls : MonoBehaviour
         }
         else if (wallJumpRequest)
         {
-            playerAudio.PlayOneShot(jumpSound, 0.75f);
+            playerAudio.PlayOneShot(jumpSound, 0.35f);
 
             wallJumpRequest = false;
             StartCoroutine(blockInput(wjHoriPause));
@@ -258,6 +259,14 @@ public class PlatformerControls : MonoBehaviour
     }
 
 
-        // interaction functionality ----------------------------------------------------------------------------------------
-
+    // interaction functionality ----------------------------------------------------------------------------------------
+    void OnMouseDown()
+    {
+        if (!airJumpBlocked && !isOnWall)
+        {
+            airJumpBlocked = true;
+            playerAudio.PlayOneShot(airJumpSound, 0.45f);
+            rb.velocity = new Vector2(rb.velocity.x, 0.75f * jumpForce);
+        }
     }
+}

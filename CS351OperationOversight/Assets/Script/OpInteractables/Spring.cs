@@ -16,6 +16,9 @@ public class Spring : MonoBehaviour
 
     private Animator animator;
 
+    private AudioSource springAudio;
+    public AudioClip springSound;
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -46,6 +49,7 @@ public class Spring : MonoBehaviour
             }
 
             player.launch(direction, launchPower, isHori);
+            springAudio.PlayOneShot(springSound, 0.25f);
             animator = GetComponent<Animator>();
             animator.SetTrigger("Activate");
         }
@@ -54,7 +58,7 @@ public class Spring : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        springAudio = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
