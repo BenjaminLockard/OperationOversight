@@ -32,7 +32,7 @@ public class PlatformerControls : MonoBehaviour
     private float jumpBufferCounter, coyoteTimeCounter;
     public float jumpBufferTime = 0.10f, coyoteTimeDuration = 0.10f;
 
-    private Vector3 currentRespawnPosition = Vector3.zero;
+    private Vector3 currentRespawnPosition = new Vector3(-60, 7);
 
     private AudioSource playerAudio;
     public AudioClip jumpSound, airJumpSound, landSound, dieSound, runSound;
@@ -260,7 +260,7 @@ public class PlatformerControls : MonoBehaviour
     }
     IEnumerator Cooldown()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.4f);
         animator.SetBool("Activate", false);
     }
 
