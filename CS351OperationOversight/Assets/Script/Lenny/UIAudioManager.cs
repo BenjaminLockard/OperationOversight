@@ -27,7 +27,7 @@ public class UIAudioManager : MonoBehaviour
         }
     }
 
-    // Plays specified audio clip when button clicked once
+    // Plays specified audio clip when button clicked
     void PlayClick()
     {
         uiAudioSource.PlayOneShot(buttonClickSound);
