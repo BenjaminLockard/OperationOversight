@@ -81,6 +81,7 @@ public class PlatformerControls : MonoBehaviour
     IEnumerator respawn()
     {
         //start death animation here
+
         //incorporate death effect into animation or make new effect
         //adjust pause based on animation length in inspector
         yield return new WaitForSeconds(deathPause);
@@ -257,7 +258,11 @@ public class PlatformerControls : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 180, 0); //left
         }
     }
-
+    IEnumerator Cooldown()
+    {
+        yield return new WaitForSeconds(1f);
+        animator.SetBool("Activate", false);
+    }
 
     // interaction functionality ----------------------------------------------------------------------------------------
     void OnMouseDown()
@@ -267,6 +272,9 @@ public class PlatformerControls : MonoBehaviour
             airJumpBlocked = true;
             playerAudio.PlayOneShot(airJumpSound, 0.45f);
             rb.velocity = new Vector2(rb.velocity.x, 0.75f * jumpForce);
+            animator.SetBool("Activate", true);
+            StartCoroutine(Cooldown());
+
         }
     }
 }
