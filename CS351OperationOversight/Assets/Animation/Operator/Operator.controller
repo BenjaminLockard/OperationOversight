@@ -128,13 +128,13 @@ AnimatorStateMachine:
     m_Position: {x: 350, y: 100, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -6258874413616881509}
-    m_Position: {x: 390, y: -60, z: 0}
+    m_Position: {x: 340, y: -30, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3986654823779752347}
-    m_Position: {x: 640, y: -90, z: 0}
+    m_Position: {x: 650, y: -20, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8673919651479296996}
-    m_Position: {x: 170, y: -50, z: 0}
+    m_Position: {x: 80, y: -30, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: -7084278379169330251}
@@ -252,31 +252,31 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: YVelocity
     m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: OnGround
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: OnWall
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: Activate
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
