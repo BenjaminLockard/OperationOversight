@@ -3,6 +3,7 @@
     Assignment: Team Project (Operation Oversight)
     Description: Manages the audio for UI elements in the Title & Stage Select Screens
     Initially Created: Thursday, 11/13/25
+        Modified: Friday, 11/21/25
 */
 
 using System.Collections;
@@ -12,6 +13,7 @@ using UnityEngine.UI; // Added
 
 public class UIAudioManager : MonoBehaviour
 {
+    // Main variables for this class
     public AudioSource uiAudioSource;
     public AudioClip buttonClickSound;
 
@@ -27,7 +29,7 @@ public class UIAudioManager : MonoBehaviour
         }
     }
 
-    // Plays specified audio clip when button clicked
+    // Plays specified audio clip when any button clicked
     void PlayClick()
     {
         uiAudioSource.PlayOneShot(buttonClickSound);

@@ -3,6 +3,7 @@
     Assignment: Team Project (Operation Oversight)
     Description: Manages the pause menu (in the main scene)
     Initially Created: Wednesday, 11/19/25
+        Modified: Friday, 11/21/25
 */
 
 using System.Collections;
@@ -12,6 +13,7 @@ using UnityEngine.SceneManagement; // Added (for reloading scene)
 
 public class PauseMenuManager : MonoBehaviour
 {
+    // Main variables for this class
     public static bool GameIsPaused = false;
     public GameObject pauseMenuUI;
 
@@ -51,6 +53,7 @@ public class PauseMenuManager : MonoBehaviour
         }
     }
 
+    // Called when "Resume" button clicked
     public void Resume()
     {
         pauseMenuUI.SetActive(false);
@@ -67,6 +70,7 @@ public class PauseMenuManager : MonoBehaviour
         fadeCoroutine = StartCoroutine(FadeAudio(musicSource.volume, 1f, fadeDuration));
     }
 
+    // Called when scene first loads & whenever "Escape" key pressed
     void Pause()
     {
         pauseMenuUI.SetActive(true);
@@ -83,6 +87,7 @@ public class PauseMenuManager : MonoBehaviour
         fadeCoroutine = StartCoroutine(FadeAudio(musicSource.volume, 0f, fadeDuration));
     }
 
+    // Called when "Restart" button clicked
     public void Restart()
     {
         Time.timeScale = 1f;
