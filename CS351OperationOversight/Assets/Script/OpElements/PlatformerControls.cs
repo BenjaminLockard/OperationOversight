@@ -65,7 +65,7 @@ public class PlatformerControls : MonoBehaviour
     {
         inputBlocked = true;
 
-        playerAudio.PlayOneShot(dieSound, 0.25f);
+        playerAudio.PlayOneShot(dieSound, 0.05f);
         Vector2 direction = transform.position - hazardPosition;
         direction.Normalize();
 
@@ -73,8 +73,6 @@ public class PlatformerControls : MonoBehaviour
         rb.AddForce(direction * knockbackForce, ForceMode2D.Impulse);
 
         animator.SetBool("Dying", true);
-
-        StartCoroutine(RecoverFromHit());
 
         //Cole added following lines 11/18 to reset all activated hazards when player dies
         //code to reset all blockades when you die
@@ -101,23 +99,6 @@ public class PlatformerControls : MonoBehaviour
 
     IEnumerator respawn()
     {
-        //start death animation here
-
-        //incorporate death effect into animation or make new effect
-
-        //Instantiate death effect
-        //GameObject deathEffect = Instantiate(PlayerDeathEffect, transform.position, Quaternion.identity);
-
-        //destroy death effect after 1 second
-        //Destroy(deathEffect, 1f);
-
-        
-
-
-        //spirite visibility off
-
-
-        //adjust pause based on animation length in inspector
         yield return new WaitForSeconds(deathPause);
 
         //ensure sprite returns to idle
@@ -126,19 +107,19 @@ public class PlatformerControls : MonoBehaviour
 
         rb.velocity = Vector2.zero;
 
-        //animator.SetBool("Dying", false);
+        animator.SetBool("Dying", false);
 
 
         inputBlocked = false;
     }
-    IEnumerator RecoverFromHit()
-    {
-        yield return new WaitForSeconds(hitRecoveryTime);
-        hitRecently = false;
-        //reset hit animation
-        animator.SetBool("Dying", false);
+    //IEnumerator RecoverFromHit()
+    //{
+    //    yield return new WaitForSeconds(hitRecoveryTime);
+    //    hitRecently = false;
+    //    //reset hit animation
+    //    animator.SetBool("Dying", false);
 
-    }
+    //}
 
     IEnumerator audiblyWalk()
     {

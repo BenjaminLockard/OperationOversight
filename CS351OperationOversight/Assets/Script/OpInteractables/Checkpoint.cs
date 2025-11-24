@@ -8,6 +8,9 @@ public class Checkpoint : MonoBehaviour
 	
     private Animator animator;
 
+    private AudioSource flagAudio;
+    public AudioClip flagSound;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
 
@@ -21,6 +24,7 @@ public class Checkpoint : MonoBehaviour
                 return;
             }
 
+            flagAudio.PlayOneShot(flagSound, 0.3f);
             player.setCheckpoint(transform.position);
             animator = GetComponent<Animator>();
             animator.SetBool("Activate",true);
@@ -43,6 +47,7 @@ public class Checkpoint : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        flagAudio = GetComponent<AudioSource>();
         animator = GetComponent<Animator>();
         animator.SetBool("Activate",false);
     }

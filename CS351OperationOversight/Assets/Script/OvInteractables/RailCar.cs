@@ -40,8 +40,12 @@ public class RailCar : MonoBehaviour
     private Vector3 initialPosition;
     private Quaternion initialRotation;
 
+    private AudioSource railAudio;
+    public AudioClip railSound;
+
     void Start()
     {
+        railAudio = GetComponent<AudioSource>();
         railAnimator = GetComponent<Animator>();
 
         if (pointA != null)
@@ -106,7 +110,10 @@ public class RailCar : MonoBehaviour
         if (isMoving) return;
 
         if (railAnimator != null)
+        {
+            railAudio.PlayOneShot(railSound, 0.4f);
             railAnimator.SetBool("IsMoving", true);
+        }
 
         // Set target based on direction
         targetPos = movingToB ? pointB.position : pointA.position;
