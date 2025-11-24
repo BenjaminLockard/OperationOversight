@@ -32,7 +32,7 @@ public class PlatformerControls : MonoBehaviour
     private float jumpBufferCounter, coyoteTimeCounter;
     public float jumpBufferTime = 0.10f, coyoteTimeDuration = 0.10f;
 
-    private Vector3 currentRespawnPosition = new Vector3(0, 0);
+    private Vector3 currentRespawnPosition = new Vector3(-149.5f, -27f);
 
     private AudioSource playerAudio;
     public AudioClip jumpSound, airJumpSound, landSound, dieSound, runSound;
