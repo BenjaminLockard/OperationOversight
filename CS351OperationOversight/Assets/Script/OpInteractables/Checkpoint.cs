@@ -5,7 +5,7 @@ using UnityEngine;
 public class Checkpoint : MonoBehaviour
 {
 
-	public Door doorToOpen;
+	
     private Animator animator;
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -25,12 +25,7 @@ public class Checkpoint : MonoBehaviour
             animator = GetComponent<Animator>();
             animator.SetBool("Activate",true);
 
-		if (doorToOpen != null)
-		{
-			doorToOpen.OpenDoor();
-		}
-
-            StartCoroutine(Cooldown());
+		            StartCoroutine(Cooldown());
         }
     }
     IEnumerator Cooldown()

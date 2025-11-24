@@ -43,41 +43,40 @@ public class ButtonActivatedBlockade : MonoBehaviour
         // Set button initial color
         if (buttonSprite != null)
             buttonSprite.color = inactiveColor;
-	StartCoroutine(AnimateBlockade(true));
+        StartCoroutine(AnimateBlockade(true));
     }
-	
+    
 
+    public void ResetBlockade()
+    {
+        // Stop any running animations
+        StopAllCoroutines();
 
-public void ResetBlockade()
-{
-    // Stop any running animations
-    StopAllCoroutines();
+        // Set active state
+        isActive = true;
 
-    // Set active state
-    isActive = true;
+        // Activate the blockade object
+        blockadeInstance.SetActive(true);
 
-    // Activate the blockade object
-    blockadeInstance.SetActive(true);
+        // Set button to active color
+        if (buttonSprite != null)
+            buttonSprite.color = activeColor;
 
-    // Set button to active color
-    if (buttonSprite != null)
-        buttonSprite.color = activeColor;
+        // Recalculate correct position/orientation/length
+        Vector3 midpoint = (pointA.position + pointB.position) / 2f;
+        blockadeInstance.transform.position = midpoint;
 
-    // Recalculate correct position/orientation/length
-    Vector3 midpoint = (pointA.position + pointB.position) / 2f;
-    blockadeInstance.transform.position = midpoint;
+        Vector3 direction = pointB.position - pointA.position;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        blockadeInstance.transform.rotation = Quaternion.Euler(0, 0, angle);
 
-    Vector3 direction = pointB.position - pointA.position;
-    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-    blockadeInstance.transform.rotation = Quaternion.Euler(0, 0, angle);
-
-    float distance = direction.magnitude;
-    blockadeInstance.transform.localScale = new Vector3(
-        distance,
-        blockadeInstance.transform.localScale.y,
-        blockadeInstance.transform.localScale.z
-    );
-}
+        float distance = direction.magnitude;
+        blockadeInstance.transform.localScale = new Vector3(
+            distance,
+            blockadeInstance.transform.localScale.y,
+            blockadeInstance.transform.localScale.z
+        );
+    }
 
 
 
