@@ -4,40 +4,39 @@
  * Description: Rail car 
  */
 
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class RailCar : MonoBehaviour
 {
-    // Animation
+    
     private Animator railAnimator;
 
-    [Header("Movement Settings")]
+    
     public Transform pointA;
     public Transform pointB;
     public float moveSpeed;
 
-    [Header("Player Settings")]
+    
     public Transform player;         // Assign your player here
     public float attachDistance = 2f;
 
-    [Header("Visual Settings")]
+
     public Color defaultColor = Color.white;
     public Color ridingColor = Color.yellow;
 
     // Movement variables
     private Vector3 targetPos;
-    private bool movingToB = true;
     private bool isMoving = false;
     private bool playerRiding = false;
+    private bool movingToB = true; // Track direction
 
     private Rigidbody2D playerRb;
     private SpriteRenderer spriteRenderer;
     private Vector3 previousPosition;
 
-    // For ResetRailcars
+   
     private Vector3 initialPosition;
     private Quaternion initialRotation;
 
@@ -84,13 +83,16 @@ public class RailCar : MonoBehaviour
 
         // Move player with railcar if riding
         if (playerRiding && player != null)
-        {
             player.position += delta;
-        }
 
+        // Check if target reached
         if (Vector3.Distance(transform.position, targetPos + new Vector3(0f, -0.5f, 0f)) < 0.01f)
         {
             isMoving = false;
+
+            // Flip direction for next click
+            movingToB = !movingToB;
+
             if (railAnimator != null)
                 railAnimator.SetBool("IsMoving", false);
         }
@@ -100,13 +102,13 @@ public class RailCar : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (railAnimator != null)
-        {
-            railAnimator.SetBool("IsMoving", true);
-        }
+        // Only respond if not already moving
+        if (isMoving) return;
 
-        // Toggle railcar movement
-        movingToB = !movingToB;
+        if (railAnimator != null)
+            railAnimator.SetBool("IsMoving", true);
+
+        // Set target based on direction
         targetPos = movingToB ? pointB.position : pointA.position;
         isMoving = true;
 
@@ -115,9 +117,7 @@ public class RailCar : MonoBehaviour
         {
             float distance = Vector3.Distance(player.position, transform.position);
             if (distance <= attachDistance)
-            {
                 AttachPlayer();
-            }
         }
     }
 
@@ -127,11 +127,8 @@ public class RailCar : MonoBehaviour
 
         playerRiding = true;
 
-        // Optional: freeze vertical velocity to prevent falling
         if (playerRb != null)
-        {
             playerRb.velocity = Vector2.zero;
-        }
 
         if (spriteRenderer != null)
             spriteRenderer.color = ridingColor;
@@ -153,30 +150,23 @@ public class RailCar : MonoBehaviour
         if (pointA != null) Gizmos.DrawSphere(pointA.position, 0.2f);
         if (pointB != null) Gizmos.DrawSphere(pointB.position, 0.2f);
 
-        // Draw a line between points
         if (pointA != null && pointB != null)
             Gizmos.DrawLine(pointA.position, pointB.position);
     }
 
-    
     public void ResetRailcars()
     {
-        // Reset position and rotation
         transform.position = initialPosition;
         transform.rotation = initialRotation;
 
-        // stops moving 
         isMoving = false;
         movingToB = true;
         targetPos = pointB.position + new Vector3(0f, -0.5f, 0f);
 
-        //  animator reset
         if (railAnimator != null)
             railAnimator.SetBool("IsMoving", false);
 
-        // Detach player if riding just in case
         if (playerRiding)
             DetachPlayer();
     }
 }
-
