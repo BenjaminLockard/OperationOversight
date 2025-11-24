@@ -26,6 +26,10 @@ public class Checkpoint : MonoBehaviour
             animator.SetBool("Activate",true);
 
 		            StartCoroutine(Cooldown());
+
+            //disable collider to prevent reactivation
+            GetComponent<Collider2D>().enabled = false;
+
         }
     }
     IEnumerator Cooldown()
