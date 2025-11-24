@@ -4,6 +4,7 @@
     Description: Manages the dialogue panel (in the main scene)
     Initially Created: Friday, 11/21/25 (originally was TutorialManager - morphed into dictionary-based dialogue system)
         Modified: Saturday, 11/22/25 (dictionary approach wasn't fully working - turned attention to array-based system instead)
+        Modified: Sunday, 11/23/25 (troubleshooting & final touches)
     Additional Comments:
         I went with this approach to the dialogue because it seems scalable (i.e. reusable/adaptable)
         I tried to add enough comments in order to maximize comprehensibiliy
@@ -21,6 +22,7 @@ public class DialogueManager : MonoBehaviour
     // ----------------------------------------------------------
     // SETTING UP VARIABLES & REFERENCES
     // ----------------------------------------------------------
+    public static DialogueManager Instance;
 
     // Each dialogue "step" (i.e. each turn when a character is speaking) represented by this class
     [System.Serializable]
@@ -47,34 +49,50 @@ public class DialogueManager : MonoBehaviour
     private DialogueStep[] currentDialogue;
     private int currentIndex;
 
+    // EXTRA FUNCTION
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     // ----------------------------------------------------------
     // MAIN START
     // ----------------------------------------------------------
     void Start()
     {
+        // Awake();
         dialoguePanel.SetActive(false);
         StartDialogue(introDialogue); // This is what starts the first "set" of dialogue
         continueButton.onClick.AddListener(OnAdvanceInput); // Waits for player to press continueButton
-    }
 
+    }
+    /*
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.CompareTag("Player"))
+        {
+            Instance.StartDialogue(checkpointOneDialogue);
+        }
+    }
+    */
     // ----------------------------------------------------------
-    // STEP 0: Dialogue sequence(s) stored in array(s)
+    // STEP 0: Dialogue sequences stored in separate arrays (each activated in their own area)
     // ----------------------------------------------------------
-    private DialogueStep[] introDialogue = new DialogueStep[] // This array will contain the intro dialogue
+    private DialogueStep[] introDialogue = new DialogueStep[] // This array contains the intro dialogue
     {
         new DialogueStep
         {
             speakerName = "Operative",
             line = "...so, explain to me what I'm trying to do again?",
             isLeftSpeaker = true,
-            // portrait = null
+            portrait = null
         },
         new DialogueStep
         {
             speakerName = "Overseer",
             line = "(Sigh). Get to the objective. It's that simple.",
             isLeftSpeaker = false,
-            // portrait = null
+            portrait = null
         },
         new DialogueStep
         {
@@ -91,25 +109,77 @@ public class DialogueManager : MonoBehaviour
         new DialogueStep
         {
             speakerName = "Operative",
-            line = "No...I wasn't here before, I know it...I was doing something else..and then I was here.",
+            line = "No...I wasn't here before, I know it...I was doing something else..and then I was here..",
             isLeftSpeaker = true
         },
         new DialogueStep
         {
             speakerName = "Overseer",
-            line = "I know you're confused right now. Just focus on the objective. Use the mouse to click on interactables.",
+            line = "I know you're confused right now. Just focus on the objective. Use the mouse to click on interactable terrain, like platforms.",
             isLeftSpeaker = false
         },
         new DialogueStep
         {
             speakerName = "Operative",
-            line = "Hold on...are you controlling me? Can I even do anyth--am I even alive?",
+            line = "Hold on...are you controlling me? Can I even do anyth--what is going on right now?",
             isLeftSpeaker = true
         },
         new DialogueStep
         {
             speakerName = "Overseer",
-            line = "Things will start to make more sense as you near completion of your objective. And, yes, you are alive; I am not controlling you; I am merely helping you reach your objective; you could even say you're 'within control' since you still have free will.",
+            line = "Things will start to make more sense as you near completion of your objective. And, yes, you are alive; I am not controlling you; I am merely helping you reach your objective; you could even say you're 'within control' since you still have free will..or am I mistaken?",
+            isLeftSpeaker = false
+        },
+        new DialogueStep
+        {
+            speakerName = "Operative",
+            line = "Huh..well, when you put it that way..I guess I have no option but to continue with whatever this is.",
+            isLeftSpeaker = true
+        },
+        new DialogueStep
+        {
+            speakerName = "Overseer",
+            line = "That's the spirit. Oh, one last reminder: you can always pause the game (with escape key) to remind you of the controls. Hint: you'll need it after you reach the first checkpoint",
+            isLeftSpeaker = false
+        }
+    };
+
+    private DialogueStep[] checkpointOneDialogue = new DialogueStep[] // This array contains the dialogue for the first checkpoint
+    {
+        new DialogueStep
+        {
+            speakerName = "Operative",
+            line = "Whoever you are, I'm starting to think that what you're asking of me is impossible.",
+            isLeftSpeaker = true
+        },
+        new DialogueStep
+        {
+            speakerName = "Overseer",
+            line = "Why would I give you an objective which I know is not possible for you to achieve? You've made it this far.",
+            isLeftSpeaker = false
+        },
+        new DialogueStep
+        {
+            speakerName = "Operative",
+            line = "..what, how do I traverse this following area; I can't jump that far.",
+            isLeftSpeaker = true
+        },
+        new DialogueStep
+        {
+            speakerName = "Overseer",
+            line = "Oh, but you can. Click on the player (that being yourself) while jumping to active air jumping. This should provide the necessary lift to get you over this section.",
+            isLeftSpeaker = false
+        },
+        new DialogueStep
+        {
+            speakerName = "Operative",
+            line = "Why are you calling me 'player'? Huh...I guess I'm still getting used to this feeling, which I can't seem to shake off..",
+            isLeftSpeaker = true
+        },
+        new DialogueStep
+        {
+            speakerName = "Overseer",
+            line = "You're doing great so far; perhaps acceptance is this feeling you're referring to, no?",
             isLeftSpeaker = false
         }
     };
