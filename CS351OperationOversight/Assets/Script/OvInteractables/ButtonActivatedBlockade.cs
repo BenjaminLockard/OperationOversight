@@ -2,6 +2,7 @@
  * Date: 11/18/2025
  * Assignment: P06
  * Description: Handles the action of forming a blockade between points a and b
+ * Modified to keep fixed vertical length and play SFX
  */
 
 using System.Collections;
@@ -15,12 +16,16 @@ public class ButtonActivatedBlockade : MonoBehaviour
     public Transform pointB;
     public float animationDuration = 0.5f;
 
-   
+    [Header("Button Settings")]
     public SpriteRenderer buttonSprite; 
     public Color inactiveColor = Color.white;
     public Color activeColor = Color.green;
 
-    
+    [Header("Audio Settings")]
+    public AudioSource audioSource; // Assign AudioSource component here
+    public AudioClip openClip;      // Sound when opening
+    public AudioClip closeClip;     // Sound when closing
+
     public bool isActive = true; 
 
     private GameObject blockadeInstance;
@@ -43,26 +48,23 @@ public class ButtonActivatedBlockade : MonoBehaviour
         // Set button initial color
         if (buttonSprite != null)
             buttonSprite.color = inactiveColor;
+
         StartCoroutine(AnimateBlockade(true));
     }
     
 
     public void ResetBlockade()
     {
-        // Stop any running animations
         StopAllCoroutines();
-
-        // Set active state
         isActive = true;
 
-        // Activate the blockade object
-        blockadeInstance.SetActive(true);
-
-        // Set button to active color
         if (buttonSprite != null)
             buttonSprite.color = activeColor;
 
-        // Recalculate correct position/orientation/length
+        if (blockadeInstance != null)
+            blockadeInstance.SetActive(true);
+
+        // Reset position and scale
         Vector3 midpoint = (pointA.position + pointB.position) / 2f;
         blockadeInstance.transform.position = midpoint;
 
@@ -78,38 +80,39 @@ public class ButtonActivatedBlockade : MonoBehaviour
         );
     }
 
-
-
-    // Toggle blockade on/off
     public void ToggleBlockade()
     {
-        if (isAnimating) return; // prevent interrupting animation
+        if (isAnimating) return;
+
+        // Play SFX
+        if (audioSource != null)
+        {
+            if (isActive && closeClip != null)
+                audioSource.PlayOneShot(closeClip);
+            else if (!isActive && openClip != null)
+                audioSource.PlayOneShot(openClip);
+        }
 
         if (isActive)
             StartCoroutine(AnimateBlockade(false));
         else
             StartCoroutine(AnimateBlockade(true));
 
-        // Flip state
         isActive = !isActive;
 
-        // Update button color
         if (buttonSprite != null)
             buttonSprite.color = isActive ? activeColor : inactiveColor;
     }
 
-    // Returns whether the blockade is currently active
     public bool IsBlockadeActive()
     {
         return isActive;
     }
 
-    // Coroutine to animate blockade
     private IEnumerator AnimateBlockade(bool turnOn)
     {
         isAnimating = true;
 
-        // Set blockade position and rotation
         Vector3 midpoint = (pointA.position + pointB.position) / 2f;
         blockadeInstance.transform.position = midpoint;
 
