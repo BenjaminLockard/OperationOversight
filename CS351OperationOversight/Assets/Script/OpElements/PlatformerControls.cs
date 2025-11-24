@@ -39,7 +39,12 @@ public class PlatformerControls : MonoBehaviour
 
     private Animator animator;
 
-    public GameObject PlayerDeathEffect;
+    //public GameObject PlayerDeathEffect;
+
+    public float hitRecoveryTime;
+
+    public static bool hitRecently = false;
+
 
     // general functions ----------------------------------------------------------------------------------------
 
@@ -67,7 +72,9 @@ public class PlatformerControls : MonoBehaviour
         direction.y = direction.y * 0.5f + 0.5f;
         rb.AddForce(direction * knockbackForce, ForceMode2D.Impulse);
 
-        
+        animator.SetBool("Dying", true);
+
+        StartCoroutine(RecoverFromHit());
 
         //Cole added following lines 11/18 to reset all activated hazards when player dies
         //code to reset all blockades when you die
@@ -99,10 +106,13 @@ public class PlatformerControls : MonoBehaviour
         //incorporate death effect into animation or make new effect
 
         //Instantiate death effect
-        GameObject deathEffect = Instantiate(PlayerDeathEffect, transform.position, Quaternion.identity);
+        //GameObject deathEffect = Instantiate(PlayerDeathEffect, transform.position, Quaternion.identity);
 
         //destroy death effect after 1 second
-        Destroy(deathEffect, 1f);
+        //Destroy(deathEffect, 1f);
+
+        
+
 
         //spirite visibility off
 
@@ -116,7 +126,18 @@ public class PlatformerControls : MonoBehaviour
 
         rb.velocity = Vector2.zero;
 
+        //animator.SetBool("Dying", false);
+
+
         inputBlocked = false;
+    }
+    IEnumerator RecoverFromHit()
+    {
+        yield return new WaitForSeconds(hitRecoveryTime);
+        hitRecently = false;
+        //reset hit animation
+        animator.SetBool("Dying", false);
+
     }
 
     IEnumerator audiblyWalk()
