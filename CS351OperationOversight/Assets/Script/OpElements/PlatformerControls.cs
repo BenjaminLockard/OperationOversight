@@ -65,13 +65,24 @@ public class PlatformerControls : MonoBehaviour
         direction.y = direction.y * 0.5f + 0.5f;
         rb.AddForce(direction * knockbackForce, ForceMode2D.Impulse);
 
-        //Cole added following lines 11/18 to reset all activated hazards when player dies
+      
+ //Cole added following lines 11/18 to reset all activated hazards when player dies
+	//code to reset all blockades when you die
         ButtonActivatedBlockade[] allBlockades = FindObjectsOfType<ButtonActivatedBlockade>();
 
         foreach (ButtonActivatedBlockade blockade in allBlockades)
         {
             blockade.ResetBlockade();
         }
+
+	{
+// code to reset all railcars location to starting point when you die
+    RailCar[] allRailCars = FindObjectsOfType<RailCar>();
+    foreach (RailCar rc in allRailCars)
+    {
+        rc.ResetRailcars();
+    }
+}
 
 
         StartCoroutine(respawn());

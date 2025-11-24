@@ -11,10 +11,8 @@ using UnityEngine;
 
 public class RailCar : MonoBehaviour
 {
-
-    //animation
+    // Animation
     private Animator railAnimator;
-
 
     [Header("Movement Settings")]
     public Transform pointA;
@@ -29,6 +27,7 @@ public class RailCar : MonoBehaviour
     public Color defaultColor = Color.white;
     public Color ridingColor = Color.yellow;
 
+    // Movement variables
     private Vector3 targetPos;
     private bool movingToB = true;
     private bool isMoving = false;
@@ -36,19 +35,25 @@ public class RailCar : MonoBehaviour
 
     private Rigidbody2D playerRb;
     private SpriteRenderer spriteRenderer;
-
     private Vector3 previousPosition;
+
+    // For ResetRailcars
+    private Vector3 initialPosition;
+    private Quaternion initialRotation;
 
     void Start()
     {
         railAnimator = GetComponent<Animator>();
-
 
         if (pointA != null)
             transform.position = pointA.position + new Vector3(0f, -0.5f, 0f);
 
         targetPos = pointB.position + new Vector3(0f, -0.5f, 0f);
         previousPosition = transform.position + new Vector3(0f, -0.5f, 0f);
+
+        // Save initial state for ResetRailcars
+        initialPosition = transform.position;
+        initialRotation = transform.rotation;
 
         if (player != null)
             playerRb = player.GetComponent<Rigidbody2D>();
@@ -99,7 +104,6 @@ public class RailCar : MonoBehaviour
         {
             railAnimator.SetBool("IsMoving", true);
         }
-
 
         // Toggle railcar movement
         movingToB = !movingToB;
@@ -153,4 +157,26 @@ public class RailCar : MonoBehaviour
         if (pointA != null && pointB != null)
             Gizmos.DrawLine(pointA.position, pointB.position);
     }
+
+    
+    public void ResetRailcars()
+    {
+        // Reset position and rotation
+        transform.position = initialPosition;
+        transform.rotation = initialRotation;
+
+        // stops moving 
+        isMoving = false;
+        movingToB = true;
+        targetPos = pointB.position + new Vector3(0f, -0.5f, 0f);
+
+        //  animator reset
+        if (railAnimator != null)
+            railAnimator.SetBool("IsMoving", false);
+
+        // Detach player if riding just in case
+        if (playerRiding)
+            DetachPlayer();
+    }
 }
+
