@@ -4,6 +4,7 @@
     Description: Manages the pause menu (in the main scene)
     Initially Created: Wednesday, 11/19/25
         Modified: Friday, 11/21/25
+        Modified: Friday, 11/28/25
 */
 
 using System.Collections;
@@ -40,7 +41,7 @@ public class PauseMenuManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.P))
         {
             if(GameIsPaused)
             {

@@ -4,18 +4,17 @@
     Description: Manages the dialogue panel (in the main scene)
     Initially Created: Friday, 11/21/25 (originally was TutorialManager - morphed into dictionary-based dialogue system)
         Modified: Saturday, 11/22/25 (dictionary approach wasn't fully working - turned attention to array-based system instead)
-        Modified: Sunday, 11/23/25 (troubleshooting & final touches)
-    Additional Comments:
-        I went with this approach to the dialogue because it seems scalable (i.e. reusable/adaptable)
-        I tried to add enough comments in order to maximize comprehensibiliy
-        The code at the bottom is just for backup purposes (in case current system doesn't end up working out)
+        Modified: Sunday, 11/23/25 (troubleshooting & final touches to playtesting version)
+        Modified: Wednesday, 11/26/25 (fixing dialogue system)
+        Modified: Friday, 11/28/25 (fixing dialogue system)
 */
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // Added
-using TMPro; // Added
+using TMPro;
+using JetBrains.Annotations; // Added
 
 public class DialogueManager : MonoBehaviour
 {
@@ -24,20 +23,24 @@ public class DialogueManager : MonoBehaviour
     // ----------------------------------------------------------
     public static DialogueManager Instance;
 
-    // Each dialogue "step" (i.e. each turn when a character is speaking) represented by this class
+    [Header("Character Portraits")]
+    public Sprite operativePortrait;
+    public Sprite overseerPortrait;
+
+    // Each dialogue "step" (i.e. each turn when either character is speaking) represented by this class
     [System.Serializable]
     public class DialogueStep
     {
         public string speakerName;
         public string line;
-        public Sprite portrait; // Optional (can be removed if portraits don't end up being used)
+        public Sprite portrait;
         public bool isLeftSpeaker; // left = true, right = false
     }
 
     // UI References (this is what is seen in DialoguePanel)
     [Header("UI References")]
-    public Image portraitLeft;
-    public Image portraitRight;
+    public Image portraitLeft; // "Operative" image
+    public Image portraitRight; // "Overseer" image
     public TextMeshProUGUI nameLeft;
     public TextMeshProUGUI nameRight;
     public TextMeshProUGUI dialogueText;
@@ -45,145 +48,193 @@ public class DialogueManager : MonoBehaviour
     public Button continueButton;
     public Button skipButton;
 
-    // Internal Data (dialogue will be stored in arrays; each array will correspond to dialogue for a different point in the game)
+    // Fields for "typewriter" effect for dialogue
+    [SerializeField]
+    private float typingSpeed = 0.03f; // Time (seconds) between each character's line
+    private Coroutine typingCoroutine; // Allows stopping/restarting effect cleanly
+    private bool isTyping = false; // Detects when player clicks "Continue" while text is still typing
+
+    // Internal Data (dialogue will be stored in arrays; each array will correspond to a dialogue sequence for a different area)
     private DialogueStep[] currentDialogue;
     private int currentIndex;
 
-    // EXTRA FUNCTION
-    private void Awake()
+    // This dictionary maps speaker names to sprites
+    private Dictionary<string, Sprite> portraitLookup;
+
+    /*
+        Returns correct sprite for current speaker.
+        If a DialogueStep already has a portrait assigned, it uses that; otherwise, it looks up the portrait based on speakerName.
+    */
+    public Sprite GetPortraitForStep(DialogueStep step)
+    {
+        if (step.portrait != null)
+        {
+            return step.portrait;
+        }
+
+        if(portraitLookup.TryGetValue(step.speakerName, out Sprite sprite))
+        {
+            return sprite;
+        }
+
+        return null; // Fallback if speaker not in dictionary
+    }
+
+    void Awake()
     {
         Instance = this;
-    }
 
-    // ----------------------------------------------------------
-    // MAIN START
-    // ----------------------------------------------------------
-    void Start()
-    {
-        // Awake();
-        dialoguePanel.SetActive(false);
-        StartDialogue(introDialogue); // This is what starts the first "set" of dialogue
-        continueButton.onClick.AddListener(OnAdvanceInput); // Waits for player to press continueButton
-
-    }
-    /*
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if(collision.gameObject.CompareTag("Player"))
+        // Create lookup table for automatic portrait assignment
+        portraitLookup = new Dictionary<string, Sprite>
         {
-            Instance.StartDialogue(checkpointOneDialogue);
-        }
+            {"Operative", operativePortrait},
+            {"Overseer", overseerPortrait}
+        };
     }
-    */
+
     // ----------------------------------------------------------
     // STEP 0: Dialogue sequences stored in separate arrays (each activated in their own area)
     // ----------------------------------------------------------
-    private DialogueStep[] introDialogue = new DialogueStep[] // This array contains the intro dialogue
+    public static class DialogueLibrary
     {
-        new DialogueStep
+        public static DialogueStep[] introCheckpoint = new DialogueStep[] // This array contains the intro dialogue
         {
-            speakerName = "Operative",
-            line = "...so, explain to me what I'm trying to do again?",
-            isLeftSpeaker = true,
-            portrait = null
-        },
-        new DialogueStep
-        {
-            speakerName = "Overseer",
-            line = "(Sigh). Get to the objective. It's that simple.",
-            isLeftSpeaker = false,
-            portrait = null
-        },
-        new DialogueStep
-        {
-            speakerName = "Operative",
-            line = "...what...why can't I remember how I got here? Why does everything feel..so weird..",
-            isLeftSpeaker = true
-        },
-        new DialogueStep
-        {
-            speakerName = "Overseer",
-            line = "You'll get used to it. Try using WASD to move.",
-            isLeftSpeaker = false
-        },
-        new DialogueStep
-        {
-            speakerName = "Operative",
-            line = "No...I wasn't here before, I know it...I was doing something else..and then I was here..",
-            isLeftSpeaker = true
-        },
-        new DialogueStep
-        {
-            speakerName = "Overseer",
-            line = "I know you're confused right now. Just focus on the objective. Use the mouse to click on interactable terrain, like platforms.",
-            isLeftSpeaker = false
-        },
-        new DialogueStep
-        {
-            speakerName = "Operative",
-            line = "Hold on...are you controlling me? Can I even do anyth--what is going on right now?",
-            isLeftSpeaker = true
-        },
-        new DialogueStep
-        {
-            speakerName = "Overseer",
-            line = "Things will start to make more sense as you near completion of your objective. And, yes, you are alive; I am not controlling you; I am merely helping you reach your objective; you could even say you're 'within control' since you still have free will..or am I mistaken?",
-            isLeftSpeaker = false
-        },
-        new DialogueStep
-        {
-            speakerName = "Operative",
-            line = "Huh..well, when you put it that way..I guess I have no option but to continue with whatever this is.",
-            isLeftSpeaker = true
-        },
-        new DialogueStep
-        {
-            speakerName = "Overseer",
-            line = "That's the spirit. Oh, one last reminder: you can always pause the game (with escape key) to remind you of the controls. Hint: you'll need it after you reach the first checkpoint",
-            isLeftSpeaker = false
-        }
-    };
+            new DialogueStep
+            {
+                speakerName = "Operative",
+                line = "...so, explain to me what I'm trying to do again?",
+                isLeftSpeaker = true,
+                // portrait = operativePortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Overseer",
+                line = "It's pretty simple. Get to the objective. I'll be helping you get there.",
+                isLeftSpeaker = false,
+                // portrait = overseerPortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Operative",
+                line = "Are you sure you know what you're doing?",
+                isLeftSpeaker = true,
+                // portrait = operativePortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Overseer",
+                line = "Yes; I've managed to hack into the facility's mainframe. Try using AD (or arrow keys) to move and spacebar to jump.",
+                isLeftSpeaker = false,
+                // portrait = overseerPortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Operative",
+                line = "It seems like you're controlling me. I don't really like this feeling.",
+                isLeftSpeaker = true,
+                // portrait = operativePortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Overseer",
+                line = "I'm not controlling you but I am pulling the strings in your favor. Use the mouse to click on platforms to move them.",
+                isLeftSpeaker = false,
+                // portrait = overseerPortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Operative",
+                line = "This doesn't seem too bad.",
+                isLeftSpeaker = true,
+                // portrait = operativePortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Overseer",
+                line = "You're saying that now, but I will periodically contact you to advise you how to traverse this facility. It will progressively get more difficult.",
+                isLeftSpeaker = false,
+                // portrait = overseerPortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Operative",
+                line = "Okay, I'll see you then.",
+                isLeftSpeaker = true,
+                // portrait = operativePortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Overseer",
+                line = "You can pause the game (with the 'p' key) to remind you of the controls. Good luck.",
+                isLeftSpeaker = false,
+                // portrait = overseerPortrait
+            }
+        };
 
-    private DialogueStep[] checkpointOneDialogue = new DialogueStep[] // This array contains the dialogue for the first checkpoint
-    {
-        new DialogueStep
+        public static DialogueStep[] checkpointOne = new DialogueStep[] // This array contains dialogue for first checkpoint
         {
-            speakerName = "Operative",
-            line = "Whoever you are, I'm starting to think that what you're asking of me is impossible.",
-            isLeftSpeaker = true
-        },
-        new DialogueStep
-        {
-            speakerName = "Overseer",
-            line = "Why would I give you an objective which I know is not possible for you to achieve? You've made it this far.",
-            isLeftSpeaker = false
-        },
-        new DialogueStep
-        {
-            speakerName = "Operative",
-            line = "..what, how do I traverse this following area; I can't jump that far.",
-            isLeftSpeaker = true
-        },
-        new DialogueStep
-        {
-            speakerName = "Overseer",
-            line = "Oh, but you can. Click on the player (that being yourself) while jumping to active air jumping. This should provide the necessary lift to get you over this section.",
-            isLeftSpeaker = false
-        },
-        new DialogueStep
-        {
-            speakerName = "Operative",
-            line = "Why are you calling me 'player'? Huh...I guess I'm still getting used to this feeling, which I can't seem to shake off..",
-            isLeftSpeaker = true
-        },
-        new DialogueStep
-        {
-            speakerName = "Overseer",
-            line = "You're doing great so far; perhaps acceptance is this feeling you're referring to, no?",
-            isLeftSpeaker = false
-        }
-    };
+            new DialogueStep
+            {
+                speakerName = "Operative",
+                line = "Wait, how do I get past this next part?",
+                isLeftSpeaker = true,
+                // portrait = operativePortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Overseer",
+                line = "You're making good progress. Double-click on the player (you) to active double jump; if you do this while in the air, it should provide the necessary lift.",
+                isLeftSpeaker = false,
+                // portrait = overseerPortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Operative",
+                line = "Huh. Understood.",
+                isLeftSpeaker = true,
+                // portrait = operativePortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Overseer",
+                line = "I sure hope you do. Remember to stay on task.",
+                isLeftSpeaker = false,
+                // portrait = overseerPortrait
+            }
+        };
 
+        public static DialogueStep[] checkpointTwo = new DialogueStep[]
+        {
+            new DialogueStep
+            {
+                speakerName = "Operative",
+                line = "I think I'm getting pretty good at this. How much farther until the objective?",
+                isLeftSpeaker = true,
+                // portrait = operativePortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Overseer",
+                line = "I can't tell. The facility will only get more difficult to traverse from here on out, but I believe you will no longer need my assistance.",
+                isLeftSpeaker = false,
+                // portrait = overseerPortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Operative",
+                line = "So, you're leaving me?",
+                isLeftSpeaker = true,
+                // portrait = operativePortrait
+            },
+            new DialogueStep
+            {
+                speakerName = "Overseer",
+                line = "I'll still be watching you, but from now on you control your own destiny. I'll see you when you've completed the objective. Over and out.",
+                isLeftSpeaker = false,
+                // portrait = overseerPortrait
+            }
+        };
+    }
     // ----------------------------------------------------------
     // STEP 1: THIS is how you start dialogue programmatically
     // ----------------------------------------------------------
@@ -209,24 +260,35 @@ public class DialogueManager : MonoBehaviour
 
         var step = currentDialogue[index];
 
+        Sprite portraitToShow = GetPortraitForStep(step);
+
         if (step.isLeftSpeaker)
         {
+            portraitLeft.sprite = portraitToShow;
+            // portraitLeft.sprite = step.portrait;
+            nameLeft.text = step.speakerName;
+
             portraitLeft.gameObject.SetActive(true);
             portraitRight.gameObject.SetActive(false);
-
-            portraitLeft.sprite = step.portrait;
-            nameLeft.text = step.speakerName;
         }
         else
         {
+            portraitRight.sprite = portraitToShow;
+            // portraitRight.sprite = step.portrait;
+            nameRight.text = step.speakerName;
+
             portraitLeft.gameObject.SetActive(false);
             portraitRight.gameObject.SetActive(true);
-
-            portraitRight.sprite = step.portrait;
-            nameRight.text = step.speakerName;
         }
 
-        dialogueText.text = step.line;
+        // Stop old coroutine if text was still typing
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+        }
+        // Start new "typwriter" effect
+        isTyping = true; // Important to set before starting coroutine
+        typingCoroutine = StartCoroutine(TypeSentence(step.line));
     }
 
     // ----------------------------------------------------------
@@ -236,6 +298,20 @@ public class DialogueManager : MonoBehaviour
     {
         var step = currentDialogue[currentIndex];
 
+        // If text is still typing, show full text instantly
+        if (isTyping)
+        {
+            if (typingCoroutine != null)
+            {
+                StopCoroutine(typingCoroutine);
+            }
+
+            dialogueText.text = step.line;
+            isTyping = false;
+            return;
+        }
+
+        // Otherwise, go to next dialogue step
         currentIndex++;
         ShowDialogue(currentIndex);
     }
@@ -254,6 +330,33 @@ public class DialogueManager : MonoBehaviour
     public void SkipTutorial() // Used by skipButton
     {
         EndDialogue();
+    }
+
+    // Coroutine for displaying dialogue text with "typewriter" effect
+    private IEnumerator TypeSentence(string sentence)
+    {
+        isTyping = true;
+        dialogueText.text = "";
+
+        foreach (char c in sentence)
+        {
+            dialogueText.text += c;
+            yield return new WaitForSeconds(typingSpeed);
+        }
+
+        isTyping = false;
+        typingCoroutine = null;
+    }
+
+    // ----------------------------------------------------------
+    // MAIN START
+    // ----------------------------------------------------------
+    void Start()
+    {
+        Awake();
+        dialoguePanel.SetActive(false);
+        StartDialogue(DialogueLibrary.introCheckpoint); // This is what starts the first "set" of dialogue
+        continueButton.onClick.AddListener(OnAdvanceInput); // Waits for player to press continueButton
     }
 }
 
