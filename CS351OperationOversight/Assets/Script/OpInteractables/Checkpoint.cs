@@ -33,8 +33,9 @@ public class Checkpoint : MonoBehaviour
             player.setCheckpoint(transform.position);
             animator = GetComponent<Animator>();
             animator.SetBool("Activate",true);
+            GetComponent<Collider2D>().enabled = false;
 
-		    StartCoroutine(Cooldown());
+            StartCoroutine(Cooldown());
 
             // LENNY'S CODE TO FIX DIALOGUE SYSTEM
             DialogueManager.DialogueStep[] steps = GetSteps(dialogueKey);
@@ -50,7 +51,6 @@ public class Checkpoint : MonoBehaviour
             }
 
             // Disable collider to prevent reactivation
-            GetComponent<Collider2D>().enabled = false;
         }
     }
 
