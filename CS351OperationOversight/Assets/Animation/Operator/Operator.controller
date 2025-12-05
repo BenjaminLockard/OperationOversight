@@ -160,12 +160,6 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: OnGround
     m_EventTreshold: 0
-  - m_ConditionMode: 1
-    m_ConditionEvent: OnWall
-    m_EventTreshold: 0
-  - m_ConditionMode: 2
-    m_ConditionEvent: Activate
-    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 365174014514296953}
   m_Solo: 0
