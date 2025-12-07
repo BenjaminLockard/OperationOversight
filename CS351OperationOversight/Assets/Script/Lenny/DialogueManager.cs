@@ -39,8 +39,8 @@ public class DialogueManager : MonoBehaviour
 
     // UI References (this is what is seen in DialoguePanel)
     [Header("UI References")]
-    public Image portraitLeft; // "Operative" image
-    public Image portraitRight; // "Overseer" image
+    public Image portraitLeft; // "Operative (P1)" image
+    public Image portraitRight; // "Overseer (P2)" image
     public TextMeshProUGUI nameLeft;
     public TextMeshProUGUI nameRight;
     public TextMeshProUGUI dialogueText;
@@ -50,7 +50,7 @@ public class DialogueManager : MonoBehaviour
 
     // Fields for "typewriter" effect for dialogue
     [SerializeField]
-    private float typingSpeed = 0.03f; // Time (seconds) between each character's line
+    private float typingSpeed = 0.015f; // Time (seconds) between each character's line
     private Coroutine typingCoroutine; // Allows stopping/restarting effect cleanly
     private bool isTyping = false; // Detects when player clicks "Continue" while text is still typing
 
@@ -87,8 +87,8 @@ public class DialogueManager : MonoBehaviour
         // Create lookup table for automatic portrait assignment
         portraitLookup = new Dictionary<string, Sprite>
         {
-            {"Operative", operativePortrait},
-            {"Overseer", overseerPortrait}
+            {"Operative (P1)", operativePortrait},
+            {"Overseer (P2)", overseerPortrait}
         };
     }
 
@@ -101,71 +101,71 @@ public class DialogueManager : MonoBehaviour
         {
             new DialogueStep
             {
-                speakerName = "Operative",
-                line = "...so, explain to me what I'm trying to do again?",
+                speakerName = "Operative (P1)",
+                line = "Alright, remind me why I'm here?",
                 isLeftSpeaker = true,
                 // portrait = operativePortrait
             },
             new DialogueStep
             {
-                speakerName = "Overseer",
-                line = "It's pretty simple. Get to the objective. I'll be helping you get there.",
+                speakerName = "Overseer (P2)",
+                line = "It's pretty simple. Get to the control room. I'll be helping you along the way.",
                 isLeftSpeaker = false,
                 // portrait = overseerPortrait
             },
             new DialogueStep
             {
-                speakerName = "Operative",
-                line = "Are you sure you know what you're doing?",
+                speakerName = "Operative (P1)",
+                line = "And you're sure you know what you're doing?",
                 isLeftSpeaker = true,
                 // portrait = operativePortrait
             },
             new DialogueStep
             {
-                speakerName = "Overseer",
-                line = "Yes; I've managed to hack into the facility's mainframe. Try using AD (or arrow keys) to move and spacebar to jump.",
+                speakerName = "Overseer (P2)",
+                line = "Yeah, probably. I've managed to hack into this facility's mainframe. Go ahead and use the 'A' and 'D' keys to get a move on, or the arrow keys if you prefer. Oh, and use the space bar to jump.",
                 isLeftSpeaker = false,
                 // portrait = overseerPortrait
             },
             new DialogueStep
             {
-                speakerName = "Operative",
-                line = "It seems like you're controlling me. I don't really like this feeling.",
+                speakerName = "Operative (P1)",
+                line = "It seems you've hacked into me as well, not cool. We didn't talk about this...",
                 isLeftSpeaker = true,
                 // portrait = operativePortrait
             },
             new DialogueStep
             {
-                speakerName = "Overseer",
-                line = "I'm not controlling you but I am pulling the strings in your favor. Use the mouse to click on platforms to move them.",
+                speakerName = "Overseer (P2)",
+                line = "Don't worry, I'm not controlling you per se, but I am pulling the strings in your favor. There's some platforms in here I can move with a click, those'll give you a leg up.",
                 isLeftSpeaker = false,
                 // portrait = overseerPortrait
             },
             new DialogueStep
             {
-                speakerName = "Operative",
-                line = "This doesn't seem too bad.",
+                speakerName = "Operative (P1)",
+                line = "Works for me, I'll get jumping.",
                 isLeftSpeaker = true,
                 // portrait = operativePortrait
             },
             new DialogueStep
             {
-                speakerName = "Overseer",
-                line = "You're saying that now, but I will periodically contact you to advise you how to traverse this facility. It will progressively get more difficult.",
+                speakerName = "Overseer (P2)",
+                line = "Perfect. I'll stay in touch, this'll progressively get more difficult.",
                 isLeftSpeaker = false,
                 // portrait = overseerPortrait
             },
             new DialogueStep
             {
-                speakerName = "Operative",
-                line = "Okay, I'll see you then.",
+                speakerName = "Operative (P1)",
+                line = "Okay, talk soon.",
                 isLeftSpeaker = true,
                 // portrait = operativePortrait
             },
             new DialogueStep
             {
-                speakerName = "Overseer",
-                line = "You can pause the game (with the 'p' key) to remind you of the controls. Good luck.",
+                speakerName = "Overseer (P2)",
+                line = "Just remember to pause with the 'P' key if you need a breather. Good luck.",
                 isLeftSpeaker = false,
                 // portrait = overseerPortrait
             }
@@ -175,29 +175,29 @@ public class DialogueManager : MonoBehaviour
         {
             new DialogueStep
             {
-                speakerName = "Operative",
-                line = "Wait, how do I get past this next part?",
+                speakerName = "Operative (P1)",
+                line = "Wait, I can't make that. How do I get past this next part?",
                 isLeftSpeaker = true,
                 // portrait = operativePortrait
             },
             new DialogueStep
             {
-                speakerName = "Overseer",
-                line = "You're making good progress. Double-click on the player (you) to active double jump; if you do this while in the air, it should provide the necessary lift.",
+                speakerName = "Overseer (P2)",
+                line = "You can with my help. If I click on you mid-jump, you'll get an extra boost. That should provide the necessary lift.",
                 isLeftSpeaker = false,
                 // portrait = overseerPortrait
             },
             new DialogueStep
             {
-                speakerName = "Operative",
-                line = "Huh. Understood.",
+                speakerName = "Operative (P1)",
+                line = "Huh. Is that safe?",
                 isLeftSpeaker = true,
                 // portrait = operativePortrait
             },
             new DialogueStep
             {
-                speakerName = "Overseer",
-                line = "I sure hope you do. Remember to stay on task.",
+                speakerName = "Overseer (P2)",
+                line = "Maybe. Just stay on task.",
                 isLeftSpeaker = false,
                 // portrait = overseerPortrait
             }
@@ -207,29 +207,29 @@ public class DialogueManager : MonoBehaviour
         {
             new DialogueStep
             {
-                speakerName = "Operative",
-                line = "I think I'm getting pretty good at this. How much farther until the objective?",
+                speakerName = "Operative (P1)",
+                line = "I think I'm getting the hang of this. How much farther until I'm there?",
                 isLeftSpeaker = true,
                 // portrait = operativePortrait
             },
             new DialogueStep
             {
-                speakerName = "Overseer",
-                line = "I can't tell. The facility will only get more difficult to traverse from here on out, but I believe you will no longer need my assistance.",
+                speakerName = "Overseer (P2)",
+                line = "I can't tell. All I can see is security getting denser from here. There's not much more I can tell you, trust your gut.",
                 isLeftSpeaker = false,
                 // portrait = overseerPortrait
             },
             new DialogueStep
             {
-                speakerName = "Operative",
-                line = "So, you're leaving me?",
+                speakerName = "Operative (P1)",
+                line = "Wait, are you leaving me?",
                 isLeftSpeaker = true,
                 // portrait = operativePortrait
             },
             new DialogueStep
             {
-                speakerName = "Overseer",
-                line = "I'll still be watching you, but from now on you control your own destiny. I'll see you when you've completed the objective. Over and out.",
+                speakerName = "Overseer (P2)",
+                line = "No, I'll be here. I'm just tired of talking. Over and out.",
                 isLeftSpeaker = false,
                 // portrait = overseerPortrait
             }
@@ -409,35 +409,35 @@ public class DialogueManager : MonoBehaviour
         {
             new DialogueStep
             {
-                speakerName = "Operative", line = "...so, explain to me what I'm trying to do again?", isLeftSpeaker = true
+                speakerName = "Operative (P1)", line = "...so, explain to me what I'm trying to do again?", isLeftSpeaker = true
             },
             new DialogueStep
             {
-                speakerName = "Overseer", line = "(Sigh). Get to the objective. It's that simple.", isLeftSpeaker = false
+                speakerName = "Overseer (P2)", line = "(Sigh). Get to the objective. It's that simple.", isLeftSpeaker = false
             },
             new DialogueStep
             {
-                speakerName = "Operative", line = "...what...why can't I remember how I got here? Why does everything feel..so weird..", isLeftSpeaker = true
+                speakerName = "Operative (P1)", line = "...what...why can't I remember how I got here? Why does everything feel..so weird..", isLeftSpeaker = true
             },
             new DialogueStep
             {
-                speakerName = "Overseer", line = "You'll get used to it. Try using WASD to move.", isLeftSpeaker = false
+                speakerName = "Overseer (P2)", line = "You'll get used to it. Try using WASD to move.", isLeftSpeaker = false
             },
             new DialogueStep
             {
-                speakerName = "Operative", line = "No...I wasn't here before, I know it...I was doing something else..and then I was here.", isLeftSpeaker = true
+                speakerName = "Operative (P1)", line = "No...I wasn't here before, I know it...I was doing something else..and then I was here.", isLeftSpeaker = true
             },
             new DialogueStep
             {
-                speakerName = "Overseer", line = "I know you're confused right now. Just focus on the objective. Use the mouse to click on interactables.", isLeftSpeaker = false
+                speakerName = "Overseer (P2)", line = "I know you're confused right now. Just focus on the objective. Use the mouse to click on interactables.", isLeftSpeaker = false
             },
             new DialogueStep
             {
-                speakerName = "Operative", line = "Hold on...are you controlling me? Can I even do anyth--am I even alive?", isLeftSpeaker = true
+                speakerName = "Operative (P1)", line = "Hold on...are you controlling me? Can I even do anyth--am I even alive?", isLeftSpeaker = true
             },
             new DialogueStep
             {
-                speakerName = "Overseer", line = "Things will start to make more sense as you near completion of your objective. And, yes, you are alive; I am not controlling you; I am merely helping you reach your objective; you could even say you're 'within control' since you still have free will.", isLeftSpeaker = false
+                speakerName = "Overseer (P2)", line = "Things will start to make more sense as you near completion of your objective. And, yes, you are alive; I am not controlling you; I am merely helping you reach your objective; you could even say you're 'within control' since you still have free will.", isLeftSpeaker = false
             }
         };
 
