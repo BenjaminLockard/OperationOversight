@@ -244,25 +244,25 @@ public class DialogueManager : MonoBehaviour
             new DialogueStep
             {
                 speakerName = "Operative (P1)",
-                line = "If you're still there, I've arrived at the control room.",
+                line = "This looks to be the control room. Finally. Are you still here?",
                 isLeftSpeaker = true,
             },
             new DialogueStep
             {
                 speakerName = "Overseer (P2)",
-                line = "Yeah, I'm still here. Just hold on a second,I don't think this mission is over quite yet.",
+                line = "Yeah, I'm here. Just hold on a second, I'll take it from here.",
                 isLeftSpeaker = false,
             },
             new DialogueStep
             {
                 speakerName = "Operative (P1)",
-                line = "What do you mean by that?",
+                line = "Wait, what do you mean by that?",
                 isLeftSpeaker = true,
             },
             new DialogueStep
             {
                 speakerName = "Overseer (P2)",
-                line = "You'll see.",
+                line = "Don't worry about it. Enjoy the break.",
                 isLeftSpeaker = false,
             }
         };

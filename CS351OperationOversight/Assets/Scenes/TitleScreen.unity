@@ -1404,13 +1404,13 @@ MonoBehaviour:
   tmp: {fileID: 1466778955}
   glitchDuration: 0.15
   glitchInterval: 2
-  typingSpeed: 0.05
-  endOfLineClick: {fileID: 8300000, guid: d474f505b63780d49966629803637ae9, type: 3}
+  typingSpeed: 0.03
+  endOfLineClick: {fileID: 8300000, guid: 963b138c41ce2eb48bd3ca93d8586f59, type: 3}
   beepSource: {fileID: 187928921}
   beepClips:
-  - {fileID: 8300000, guid: b0bd118f54ad8e144a3361493d5c3379, type: 3}
-  - {fileID: 8300000, guid: 095dff802b5ce674d9b5394d7132b464, type: 3}
-  - {fileID: 8300000, guid: 91f1856fbcc811a4c93ae7113f2987fc, type: 3}
+  - {fileID: 8300000, guid: 2c3186f3640664841995dc4d9d3dceaa, type: 3}
+  - {fileID: 8300000, guid: ed43d33ccf654544c88167dba318f1f9, type: 3}
+  - {fileID: 8300000, guid: f921faf4b3411d745aedd4c13d877ecc, type: 3}
   beepChance: 0.4
 --- !u!4 &1958476341
 Transform:
