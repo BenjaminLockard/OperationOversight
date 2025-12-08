@@ -1195,6 +1195,11 @@ MonoBehaviour:
   tmp: {fileID: 1466778955}
   glitchDuration: 0.15
   glitchInterval: 2
+  typingSpeed: 0.02
+  endOfLineClick: {fileID: 0}
+  beepSource: {fileID: 0}
+  beepClips: []
+  beepChance: 0.7
 --- !u!1 &1530494238
 GameObject:
   m_ObjectHideFlags: 0
@@ -1399,6 +1404,14 @@ MonoBehaviour:
   tmp: {fileID: 1466778955}
   glitchDuration: 0.15
   glitchInterval: 2
+  typingSpeed: 0.05
+  endOfLineClick: {fileID: 8300000, guid: d474f505b63780d49966629803637ae9, type: 3}
+  beepSource: {fileID: 187928921}
+  beepClips:
+  - {fileID: 8300000, guid: b0bd118f54ad8e144a3361493d5c3379, type: 3}
+  - {fileID: 8300000, guid: 095dff802b5ce674d9b5394d7132b464, type: 3}
+  - {fileID: 8300000, guid: 91f1856fbcc811a4c93ae7113f2987fc, type: 3}
+  beepChance: 0.4
 --- !u!4 &1958476341
 Transform:
   m_ObjectHideFlags: 0

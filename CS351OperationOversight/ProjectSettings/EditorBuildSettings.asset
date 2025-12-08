@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/OperationSeer.unity
     guid: f1f4137ba82434242afdb5de0b4e7ad3
+  - enabled: 1
+    path: Assets/Scenes/OperationSeerHard.unity
+    guid: b3bf487c60675e3479097ad737f6917b
   m_configObjects: {}

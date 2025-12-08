@@ -4,6 +4,7 @@
     Description: Manages the stage select screen
     Initially Created: Thursday, 11/13/25
         Modified: Sunday, 11/23/25
+        Modified: Sunday, 12/7/25
 */
 
 using System.Collections;
@@ -31,8 +32,6 @@ public class StageSelectManager : MonoBehaviour
         }
         originalPos = rect.localPosition;
         StartCoroutine(JitterRoutine());
-
-
     }
 
     // Coroutine that continuously generates "text jitter" effect
@@ -52,9 +51,15 @@ public class StageSelectManager : MonoBehaviour
         }
     }
 
-    // This function is called when the "Stage 1" button is clicked
-    public void StageOneSelect()
+    // This function is called when the "Easy" mode button is clicked
+    public void EasyModeSelect()
     {
         SceneManager.LoadScene("OperationSeer");
+    }
+
+    // This function is called when the "Hard" mode button is clicked
+    public void HardModeSelect()
+    {
+        SceneManager.LoadScene("OperationSeerHard");
     }
 }

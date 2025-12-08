@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 // Modified by Lenny: Friday, 11/28/25 (fixing dialogue system)
+// Modified by Lenny: Sunday, 12/7/25 (modifying dialogue system before final submission)
 
 public class Checkpoint : MonoBehaviour
 {
@@ -40,7 +42,21 @@ public class Checkpoint : MonoBehaviour
             // LENNY'S CODE TO FIX DIALOGUE SYSTEM
             DialogueManager.DialogueStep[] steps = GetSteps(dialogueKey);
 
-            if (steps != null)
+            if(dialogueKey == "finalCheckpoint")
+            {
+                DialogueManager.Instance.StartDialogue(steps);
+                hasPlayed = true;
+
+                // When final dialogue sequence ends, re-direct to main menu
+                DialogueManager.Instance.onDialogueComplete = () =>
+                {
+                    SceneManager.LoadScene("StageSelectScreen");
+                };
+
+                // Prevent re-triggering of above action
+                GetComponent<Collider2D>().enabled = false;
+            }
+            else if (steps != null)
             {
                 DialogueManager.Instance.StartDialogue(steps);
                 hasPlayed = true;
@@ -62,6 +78,7 @@ public class Checkpoint : MonoBehaviour
             case "introCheckpoint": return DialogueManager.DialogueLibrary.introCheckpoint;
             case "checkpointOne": return DialogueManager.DialogueLibrary.checkpointOne;
             case "checkpointTwo": return DialogueManager.DialogueLibrary.checkpointTwo;
+            case "finalCheckpoint": return DialogueManager.DialogueLibrary.finalCheckpoint;
             default: return null;
         }
     }

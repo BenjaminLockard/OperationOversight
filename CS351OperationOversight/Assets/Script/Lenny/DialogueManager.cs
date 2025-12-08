@@ -7,6 +7,7 @@
         Modified: Sunday, 11/23/25 (troubleshooting & final touches to playtesting version)
         Modified: Wednesday, 11/26/25 (fixing dialogue system)
         Modified: Friday, 11/28/25 (fixing dialogue system)
+        Modified: Sunday, 12/7/25 (adding final touches to dialogue system before final submission)
 */
 
 using System.Collections;
@@ -22,6 +23,8 @@ public class DialogueManager : MonoBehaviour
     // SETTING UP VARIABLES & REFERENCES
     // ----------------------------------------------------------
     public static DialogueManager Instance;
+
+    public System.Action onDialogueComplete; // Callback used to check when finalCheckpoint reached
 
     [Header("Character Portraits")]
     public Sprite operativePortrait;
@@ -171,7 +174,7 @@ public class DialogueManager : MonoBehaviour
             }
         };
 
-        public static DialogueStep[] checkpointOne = new DialogueStep[] // This array contains dialogue for first checkpoint
+        public static DialogueStep[] checkpointOne = new DialogueStep[] // This array contains dialogue for the first checkpoint
         {
             new DialogueStep
             {
@@ -203,7 +206,7 @@ public class DialogueManager : MonoBehaviour
             }
         };
 
-        public static DialogueStep[] checkpointTwo = new DialogueStep[]
+        public static DialogueStep[] checkpointTwo = new DialogueStep[] // This array contains dialogue for the second checkpoint
         {
             new DialogueStep
             {
@@ -232,6 +235,35 @@ public class DialogueManager : MonoBehaviour
                 line = "No, I'll be here. I'm just tired of talking. Over and out.",
                 isLeftSpeaker = false,
                 // portrait = overseerPortrait
+            }
+        };
+
+        // This array contains dialogue for the final checkpoint (redirected to main menu immediately after)
+        public static DialogueStep[] finalCheckpoint = new DialogueStep[]
+        {
+            new DialogueStep
+            {
+                speakerName = "Operative (P1)",
+                line = "If you're still there, I've arrived at the control room.",
+                isLeftSpeaker = true,
+            },
+            new DialogueStep
+            {
+                speakerName = "Overseer (P2)",
+                line = "Yeah, I'm still here. Just hold on a second,I don't think this mission is over quite yet.",
+                isLeftSpeaker = false,
+            },
+            new DialogueStep
+            {
+                speakerName = "Operative (P1)",
+                line = "What do you mean by that?",
+                isLeftSpeaker = true,
+            },
+            new DialogueStep
+            {
+                speakerName = "Overseer (P2)",
+                line = "You'll see.",
+                isLeftSpeaker = false,
             }
         };
     }
@@ -286,7 +318,8 @@ public class DialogueManager : MonoBehaviour
         {
             StopCoroutine(typingCoroutine);
         }
-        // Start new "typwriter" effect
+
+        // Start new "typewriter" effect
         isTyping = true; // Important to set before starting coroutine
         typingCoroutine = StartCoroutine(TypeSentence(step.line));
     }
@@ -322,6 +355,10 @@ public class DialogueManager : MonoBehaviour
     void EndDialogue()
     {
         dialoguePanel.SetActive(false);
+
+        // This lets any script attach its own custom action to this event
+        onDialogueComplete?.Invoke(); // Call event if it exists
+        onDialogueComplete = null; // Clear event so it doesn't persist
     }
 
     // ----------------------------------------------------------
@@ -360,6 +397,7 @@ public class DialogueManager : MonoBehaviour
     }
 }
 
+// I COULD DELETE ALL OF THE BELOW COMMENTED-OUT CODE, BUT I'LL KEEP IT HERE JUST TO SHOW HOW MUCH EFFORT I PUT INTO THIS GAME
 /********************************************************************************************************************/
 // ==========================
 // CODE FOR DICTIONARY-BASED DIALOGUE SYSTEM (DISREGARD)

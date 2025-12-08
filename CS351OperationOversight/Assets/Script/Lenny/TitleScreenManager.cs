@@ -7,6 +7,7 @@
         Modified: Wednesday, 11/19/25
         Modified: Monday, 11/24/25
         Modified: Friday, 11/28/25
+        Modified: Saturday, 12/6/25
 */
 
 using System.Collections;
@@ -42,7 +43,13 @@ public class TitleScreenManager : MonoBehaviour
 
     // Other UI variables
     [Header("Typewriter Settings")]
-    public float typingSpeed = 0.02f; // Set in Inspector
+    public float typingSpeed = 0.05f; // Set in Inspector
+
+    [Header("Audio")]
+    public AudioClip endOfLineClick;
+    public AudioSource beepSource;
+    public AudioClip[] beepClips; // Multiple clips so audio feels more "natural"
+    public float beepChance = 0.4f; // Percent of characters that play a beep
 
     // Start is called before the first frame update
     void Start()
@@ -72,8 +79,6 @@ public class TitleScreenManager : MonoBehaviour
 
         foreach (string line in bootLines) // Type each line (with "typewriter" effect)
         {
-            // bootText.text += line + "\n";
-            // yield return new WaitForSeconds(lineDelay);
             yield return StartCoroutine(TypeLine(line));
             yield return new WaitForSeconds(lineDelay);
         }
@@ -137,16 +142,24 @@ public class TitleScreenManager : MonoBehaviour
         return new string(result);
     }
 
-    // Coroutine that generates "typewriter" effect for "boot-up" sequence
+    // Coroutine that generates "typewriter" effect for "boot-up" sequence (also random audioClips)
     private IEnumerator TypeLine(string line)
     {
         foreach (char c in line)
         {
             bootText.text += c;
+
+            // Play random audioClip sometimes (key press or mouse click)
+            if (Random.value < beepChance && beepClips.Length > 0)
+            {
+                beepSource.pitch = Random.Range(0.9f, 1.2f); // Subtle variation in pitch
+                beepSource.PlayOneShot(beepClips[Random.Range(0, beepClips.Length)]);
+            }
+
             yield return new WaitForSeconds(typingSpeed);
         }
 
-        // After finishing a line, add a line break
-        bootText.text += "\n";
+        bootText.text += "\n"; // After finishing a line, add a line break
+        beepSource.PlayOneShot(endOfLineClick); // Only play this specific beep after each line break
     }
 }
